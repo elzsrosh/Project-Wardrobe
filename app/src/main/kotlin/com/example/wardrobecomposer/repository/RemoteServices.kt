@@ -1,17 +1,22 @@
-package com.example.wardrobecomposer.data.repository
+package com.example.wardrobecomposer.repository
+
+import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.model.item.StyleTip
 
 object RemoteServices {
+    suspend fun getItems(): List<Item> = emptyList()
+
     suspend fun getPantonePaletteForColor(color: String): List<String> {
-        // Здесь будет реальный запрос к Pantone API
         return listOf("PANTONE 13-0647 Illuminating", "PANTONE 17-5104 Ultimate Gray")
     }
 
     suspend fun generateColorSchemeFromImage(imagePath: String): List<String> {
-        // Запрос к Adobe Color API
         return listOf("#FFB6C1", "#FFD700", "#90EE90")
     }
 
     suspend fun uploadImageToCloud(imagePath: String) {
-        // Загрузка в Dropbox или Google Drive
+        // TODO: Implement cloud upload
     }
+
+    suspend fun getStyleTips(): List<StyleTip> = emptyList()
 }
