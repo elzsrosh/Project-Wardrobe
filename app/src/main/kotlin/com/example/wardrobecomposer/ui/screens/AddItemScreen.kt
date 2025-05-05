@@ -1,8 +1,3 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class
-)
-
 package com.example.wardrobecomposer.ui.screens
 
 import androidx.compose.foundation.BorderStroke
@@ -21,6 +16,7 @@ import androidx.navigation.NavController
 import com.example.wardrobecomposer.model.item.Item
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreen(
     navController: NavController,
@@ -48,7 +44,6 @@ fun AddItemScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
         Text("ДОБАВИТЬ НОВУЮ ВЕЩЬ", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -65,10 +60,8 @@ fun AddItemScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Text("КАТЕГОРИЯ:", style = MaterialTheme.typography.titleMedium)
 
-                // Первая строка категорий
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -84,7 +77,6 @@ fun AddItemScreen(
                     }
                 }
 
-                // Вторая строка категорий
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -101,10 +93,8 @@ fun AddItemScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium)
 
-                // Первая строка материалов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -120,7 +110,6 @@ fun AddItemScreen(
                     }
                 }
 
-                // Вторая строка материалов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,11 +126,8 @@ fun AddItemScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+                Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):", style = MaterialTheme.typography.titleMedium)
 
-                Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):",
-                    style = MaterialTheme.typography.titleMedium)
-
-                // Первая строка стилей
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -160,7 +146,6 @@ fun AddItemScreen(
                     }
                 }
 
-                // Вторая строка стилей
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -180,10 +165,8 @@ fun AddItemScreen(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium)
 
-                // Первая строка цветов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -199,7 +182,6 @@ fun AddItemScreen(
                     }
                 }
 
-                // Вторая строка цветов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -215,7 +197,6 @@ fun AddItemScreen(
                     }
                 }
 
-                // Третья строка цветов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -262,53 +243,16 @@ fun AddItemScreen(
                             selectedMaterial != null &&
                             selectedStyles.isNotEmpty() &&
                             selectedColorGroup != null,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2196F3)
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
                 ) {
                     Text("СОХРАНИТЬ")
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
-}
-
-@Composable
-fun ColorSquare(
-    color: Color,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        color = color,
-        shape = RoundedCornerShape(6.dp),
-        border = if (selected) BorderStroke(3.dp, Color.Black) else null,
-        modifier = Modifier
-            .size(40.dp)
-            .clickable { onClick() }
-    ) {}
-}
-
-fun colorForGroup(group: Item.Color.ColorGroup): Color = when (group) {
-    Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> Color(0xFFB0BEC5)
-    Item.Color.ColorGroup.ТЁПЛЫЙ -> Color(0xFFFFB300)
-    Item.Color.ColorGroup.ХОЛОДНЫЙ -> Color(0xFF64B5F6)
-    Item.Color.ColorGroup.ЗЕМЛЯНОЙ -> Color(0xFF8D6E63)
-    Item.Color.ColorGroup.ПАСТЕЛЬНЫЙ -> Color(0xFFFFF59D)
-    Item.Color.ColorGroup.ЯРКИЙ -> Color(0xFFE040FB)
-    Item.Color.ColorGroup.КРАСНЫЙ -> Color(0xFFF44336)
-    Item.Color.ColorGroup.ОРАНЖЕВЫЙ -> Color(0xFFFF9800)
-    Item.Color.ColorGroup.ЖЁЛТЫЙ -> Color(0xFFFFEB3B)
-    Item.Color.ColorGroup.ЗЕЛЁНЫЙ -> Color(0xFF4CAF50)
-    Item.Color.ColorGroup.СИНИЙ -> Color(0xFF2196F3)
-    Item.Color.ColorGroup.ФИОЛЕТОВЫЙ -> Color(0xFF9C27B0)
-    Item.Color.ColorGroup.РОЗОВЫЙ -> Color(0xFFE91E63)
-    Item.Color.ColorGroup.КОРИЧНЕВЫЙ -> Color(0xFF795548)
-    Item.Color.ColorGroup.СЕРЫЙ -> Color(0xFF9E9E9E)
-    Item.Color.ColorGroup.ЧЁРНЫЙ -> Color(0xFF000000)
-    Item.Color.ColorGroup.БЕЛЫЙ -> Color(0xFFFFFFFF)
 }

@@ -2,51 +2,61 @@ package com.example.wardrobecomposer.repository
 
 import com.example.wardrobecomposer.model.item.Item
 import com.example.wardrobecomposer.model.item.Look
-import com.example.wardrobecomposer.model.item.StyleTip
+import com.example.wardrobecomposer.utils.ColorAnalyzer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class WardrobeRepository @Inject constructor(
-    private val remoteServices: RemoteServices
-) {
-    suspend fun getAllItems(): List<Item> = remoteServices.getItems()
+@Singleton
+class WardrobeRepository @Inject constructor() {
+    private val _items = MutableStateFlow<List<Item>>(emptyList())
+    val items: Flow<List<Item>> = _items.asStateFlow()
 
-    suspend fun getFilteredItems(
-        categories: List<Item.Category> = emptyList(),
-        colors: List<Item.Color.ColorGroup> = emptyList(),
-        styles: List<Item.Style> = emptyList(),
-        materials: List<Item.Material> = emptyList()
-    ): List<Item> {
-        return getAllItems().filter { item ->
-            (categories.isEmpty() || item.category in categories) &&
-                    (colors.isEmpty() || item.color.colorGroup in colors) &&
-                    (styles.isEmpty() || item.style in styles) &&
-                    (materials.isEmpty() || item.material in materials)
-        }
+    private val _looks = MutableStateFlow<List<Look>>(emptyList())
+    val looks: Flow<List<Look>> = _looks.asStateFlow()
+
+    suspend fun getAllItems(): List<Item> = _items.value
+
+    suspend fun addItem(item: Item) {
+        _items.update { current -> current + item }
     }
 
     suspend fun generateLooks(
         baseItem: Item? = null,
-        desiredStyle: Item.Style? = null,
-        colorSchemeType: Look.ColorScheme? = null
+        colorScheme: Look.ColorScheme? = null
     ): List<Look> {
-        val allItems = getAllItems()
-        val baseItems = if (baseItem != null) listOf(baseItem) else allItems
-
-        return baseItems.flatMap { item ->
-            val compatibleItems = allItems.filter { other ->
-                other.id != item.id && isItemsCompatible(item, other, desiredStyle)
+        val allItems = _items.value
+        return when {
+            baseItem != null -> {
+                allItems.filter { it.id != baseItem.id }
+                    .filter { isItemsCompatible(baseItem, it) }
+                    .map { companionItem ->
+                        createLookFromItems(baseItem, companionItem)
+                    }
             }
-            compatibleItems.map { companionItem ->
-                createLookFromItems(item, companionItem, desiredStyle)
+            colorScheme != null -> {
+                allItems.filter { item ->
+                    ColorAnalyzer.areColorsHarmonious(item.color, colorScheme.primaryColor)
+                }.chunked(2).map { items ->
+                    createLookFromItems(items[0], items.getOrElse(1) { items[0] })
+                }
             }
-        }.distinct()
+            else -> emptyList()
+        }
     }
 
-    private fun isItemsCompatible(
-        item1: Item,
-        item2: Item,
-        desiredStyle: Item.Style?
-    ): Boolean {
+    suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> {
+        return generateLooks(baseItem = baseItem)
+    }
+
+    suspend fun generateOutfitFromNewItem(newItem: Item): List<Look> {
+        return generateLooks(baseItem = newItem)
+    }
+
+    private fun isItemsCompatible(item1: Item, item2: Item): Boolean {
         val colorCompatible = when {
             item1.color.colorGroup == item2.color.colorGroup -> true
             item1.color.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
@@ -54,8 +64,7 @@ class WardrobeRepository @Inject constructor(
             else -> ColorAnalyzer.areColorsHarmonious(item1.color, item2.color)
         }
 
-        val style = desiredStyle ?: item1.style
-        val styleCompatible = item2.style == style ||
+        val styleCompatible = item2.style == item1.style ||
                 item2.style == Item.Style.ПОВСЕДНЕВНЫЙ ||
                 item1.style == Item.Style.ПОВСЕДНЕВНЫЙ
 
@@ -68,12 +77,8 @@ class WardrobeRepository @Inject constructor(
         return colorCompatible && styleCompatible && categoryCompatible
     }
 
-    private fun createLookFromItems(
-        item1: Item,
-        item2: Item,
-        desiredStyle: Item.Style?
-    ): Look {
-        val style = desiredStyle ?: listOf(item1.style, item2.style)
+    private fun createLookFromItems(item1: Item, item2: Item): Look {
+        val style = listOf(item1.style, item2.style)
             .firstOrNull { it != Item.Style.ПОВСЕДНЕВНЫЙ } ?: Item.Style.ПОВСЕДНЕВНЫЙ
 
         val colorScheme = ColorAnalyzer.analyzeColorScheme(item1.color, item2.color)
@@ -83,52 +88,20 @@ class WardrobeRepository @Inject constructor(
             name = "${item1.name} + ${item2.name}",
             items = listOf(item1, item2),
             style = style,
-            colorScheme = colorScheme
+            colorScheme = colorScheme,
+            compatibilityReason = getCompatibilityReason(item1, item2)
         )
     }
 
-    suspend fun getStyleTips(): List<StyleTip> = remoteServices.getStyleTips()
-
-    object ColorAnalyzer {
-        fun areColorsHarmonious(color1: Item.Color, color2: Item.Color): Boolean {
-            return when {
-                color1.colorGroup == color2.colorGroup -> true
-                color1.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
-                color2.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
-                color1.isWarm && color2.isWarm -> true
-                color1.isCool && color2.isCool -> true
-                else -> false
+    private fun getCompatibilityReason(item1: Item, item2: Item): String {
+        return buildString {
+            append("Совместимость: ")
+            if (item1.color.colorGroup == item2.color.colorGroup) {
+                append("цветовая гамма, ")
             }
-        }
-
-        fun analyzeColorScheme(color1: Item.Color, color2: Item.Color): Look.ColorScheme {
-            val primary = if (color1.colorGroup != Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ) color1 else color2
-            val secondary = if (color1 == primary) color2 else color1
-
-            return Look.ColorScheme(
-                primaryColor = primary,
-                secondaryColors = listOf(secondary),
-                isComplementary = areComplementary(primary, secondary),
-                isAnalogous = areAnalogous(primary, secondary),
-                isMonochromatic = areMonochromatic(primary, secondary)
-            )
-        }
-
-        private fun areComplementary(color1: Item.Color, color2: Item.Color): Boolean {
-            return when (color1.colorGroup) {
-                Item.Color.ColorGroup.ТЁПЛЫЙ -> color2.colorGroup == Item.Color.ColorGroup.ХОЛОДНЫЙ
-                Item.Color.ColorGroup.ХОЛОДНЫЙ -> color2.colorGroup == Item.Color.ColorGroup.ТЁПЛЫЙ
-                else -> false
+            if (item1.style == item2.style) {
+                append("стиль")
             }
-        }
-
-        private fun areAnalogous(color1: Item.Color, color2: Item.Color): Boolean {
-            return color1.colorGroup == color2.colorGroup
-        }
-
-        private fun areMonochromatic(color1: Item.Color, color2: Item.Color): Boolean {
-            return color1.colorGroup == color2.colorGroup &&
-                    color1.hex.substring(0, 4) == color2.hex.substring(0, 4)
-        }
+        }.removeSuffix(", ")
     }
 }

@@ -7,7 +7,8 @@ data class Look(
     val style: Item.Style,
     val colorScheme: ColorScheme,
     val rating: Float = 0f,
-    val lastWornDate: Long? = null
+    val lastWornDate: Long? = null,
+    val compatibilityReason: String = ""
 ) {
     data class ColorScheme(
         val primaryColor: Item.Color,

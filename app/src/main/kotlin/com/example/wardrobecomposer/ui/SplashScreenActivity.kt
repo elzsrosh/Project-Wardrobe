@@ -2,10 +2,10 @@ package com.example.wardrobecomposer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.compose.foundation.background
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,9 +25,14 @@ class SplashScreenActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WardrobeComposerTheme {
-                SplashScreen {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
+                ) {
+                    SplashScreen {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
                 }
             }
         }
@@ -37,9 +42,7 @@ class SplashScreenActivity : ComponentActivity() {
 @Composable
 fun SplashScreen(onStartClicked: () -> Unit) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(

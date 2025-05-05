@@ -1,4 +1,4 @@
-package com.example.wardrobecomposer.ui
+package com.example.wardrobecomposer
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -7,14 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.model.item.Look
 
 @Composable
-fun WardrobeScreen(
+fun LooksListScreen(
+    looks: List<Look>,
     onBackClick: () -> Unit,
-    onAddItemClick: () -> Unit,
-    items: List<Item>,
-    onItemClick: (Item) -> Unit
+    onLookClick: (Look) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -27,20 +26,18 @@ fun WardrobeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onAddItemClick) {
-            Text("Добавить вещь")
-        }
+        Text("Сгенерированные образы:", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (items.isEmpty()) {
-            Text("Нет добавленных вещей")
+        if (looks.isEmpty()) {
+            Text("Нет сгенерированных образов")
         } else {
             LazyColumn {
-                items(items) { item ->
-                    ItemCard(
-                        item = item,
-                        onClick = { onItemClick(item) }
+                items(looks) { look ->
+                    LookCard(
+                        look = look,
+                        onClick = { onLookClick(look) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -51,8 +48,8 @@ fun WardrobeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemCard(
-    item: Item,
+fun LookCard(
+    look: Look,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,10 +60,14 @@ fun ItemCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(item.name, style = MaterialTheme.typography.headlineSmall)
-            Text("Категория: ${item.category.name}")
-            Text("Цвет: ${item.color.colorGroup.name}")
-            Text("Стиль: ${item.style.name}")
+            Text(look.name, style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Стиль: ${look.style.name}")
+            Text("Цветовая схема: ${look.colorScheme.primaryColor.colorGroup.name}")
+            if (look.compatibilityReason.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(look.compatibilityReason, style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }
