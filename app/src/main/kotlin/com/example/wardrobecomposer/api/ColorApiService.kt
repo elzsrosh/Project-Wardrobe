@@ -1,17 +1,20 @@
 package com.example.wardrobecomposer.api
 
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface ColorApiService {
-    @GET("scheme")
-    suspend fun getColorScheme(
-        @Query("hex") hex: String,
-        @Query("mode") mode: String = "analogic",
-        @Query("count") count: Int = 5
-    ): ColorSchemeResponse
-}
+    @POST("api/")
+    suspend fun generateColorPalette(
+        @Body request: ColorRequest
+    ): ColorPaletteResponse
 
-data class ColorSchemeResponse(val colors: List<ColorInfo>)
-data class ColorInfo(val hex: HexValue)
-data class HexValue(val value: String)
+    data class ColorRequest(
+        val model: String = "default",
+        val input: List<Any>? = null // [R,G,B] или "N" для случайного
+    )
+
+    data class ColorPaletteResponse(
+        val result: List<List<Int>> // [[R,G,B], [R,G,B], [R,G,B], [R,G,B], [R,G,B]]
+    )
+}

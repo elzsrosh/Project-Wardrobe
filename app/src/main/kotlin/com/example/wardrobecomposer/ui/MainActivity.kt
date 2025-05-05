@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -37,6 +39,8 @@ class MainActivity : ComponentActivity() {
 fun WardrobeApp() {
     val navController = rememberNavController()
     val viewModel: WardrobeViewModel = hiltViewModel()
+    val items by viewModel.items.collectAsState()
+    val looks by viewModel.looks.collectAsState()
 
     NavHost(
         navController = navController,
@@ -52,7 +56,7 @@ fun WardrobeApp() {
             WardrobeScreen(
                 onBackClick = { navController.popBackStack() },
                 onAddItemClick = { navController.navigate("add_item") },
-                items = viewModel.items.value,
+                items = items,
                 onItemClick = { item ->
                     navController.navigate("item_detail/${item.id}")
                 }
@@ -76,16 +80,14 @@ fun WardrobeApp() {
         }
         composable("generate_by_color") {
             GenerateByColorScreen(
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() },
-                onGenerate = { colorGroup ->
-                    viewModel.generateLooksByColor(colorGroup)
-                    navController.navigate("looks_list")
-                }
+                onGenerateLooks = { navController.navigate("looks_list") }
             )
         }
         composable("generate_by_item") {
             GenerateByItemScreen(
-                items = viewModel.items.value,
+                items = items,
                 onBackClick = { navController.popBackStack() },
                 onGenerate = { item ->
                     viewModel.generateLooksByItem(item)
@@ -95,7 +97,7 @@ fun WardrobeApp() {
         }
         composable("looks_list") {
             LooksListScreen(
-                looks = viewModel.looks.value,
+                looks = looks,
                 onBackClick = { navController.popBackStack() },
                 onLookClick = { look ->
                     navController.navigate("look_detail/${look.id}")
@@ -103,7 +105,7 @@ fun WardrobeApp() {
             )
         }
         composable("look_detail/{lookId}") { backStackEntry ->
-            val lookId = backStackEntry.arguments?.getString("lookId")
+            val lookId = backStackEntry.arguments?.getString("lookId") ?: ""
             LookDetailScreen(
                 lookId = lookId,
                 onBackClick = { navController.popBackStack() }

@@ -1,19 +1,29 @@
 package com.example.wardrobecomposer.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.wardrobecomposer.model.item.Item
-import com.example.wardrobecomposer.utils.colorForGroup
+import com.example.wardrobecomposer.utils.ColorUtils
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 
 @Composable
 fun GenerateByColorScreen(
+    viewModel: WardrobeViewModel,
     onBackClick: () -> Unit,
-    onGenerate: (Item.Color.ColorGroup) -> Unit
+    onGenerateLooks: () -> Unit
 ) {
-    var selectedColorGroup by remember { mutableStateOf<Item.Color.ColorGroup?>(null) }
+    var selectedGroup by remember { mutableStateOf<Item.Color.ColorGroup?>(null) }
+    val colorPalette by viewModel.colorPalette.collectAsState()
+    var isLoading by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -22,33 +32,128 @@ fun GenerateByColorScreen(
         Button(onClick = onBackClick) {
             Text("Назад")
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Выберите основной цвет:", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Item.Color.ColorGroup.values().forEach { colorGroup ->
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Выберите цветовую группу:", style = MaterialTheme.typography.titleLarge)
+
+        // Разбиваем на группы по 5 элементов
+        val groupedColors = Item.Color.ColorGroup.values().toList().chunked(5)
+
+        groupedColors.forEach { rowGroups ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                ColorSquare(
-                    color = colorForGroup(colorGroup),
-                    selected = selectedColorGroup == colorGroup,
-                    onClick = { selectedColorGroup = colorGroup }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(colorGroup.name)
+                rowGroups.forEach { group ->
+                    ColorGroupButton(
+                        group = group,
+                        selected = selectedGroup == group,
+                        onClick = { selectedGroup = group }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                selectedGroup?.let {
+                    isLoading = true
+                    viewModel.generateColorPalette(ColorUtils.colorForGroup(it))
+                    isLoading = false
+                }
+            },
+            enabled = selectedGroup != null && !isLoading,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+            } else {
+                Text("Сгенерировать палитру")
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = { selectedColorGroup?.let { onGenerate(it) } },
-            enabled = selectedColorGroup != null,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Сгенерировать образы")
+        Spacer(modifier = Modifier.height(24.dp))
+
+        if (colorPalette.isNotEmpty()) {
+            Text("Гармоничная палитра:", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                colorPalette.forEach { colorHex ->
+                    ColorBox(
+                        colorHex = colorHex,
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    selectedGroup?.let {
+                        viewModel.generateLooksByColor(it)
+                        onGenerateLooks()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Создать образы")
+            }
         }
+    }
+}
+
+@Composable
+fun ColorGroupButton(
+    group: Item.Color.ColorGroup,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(60.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clickable(onClick = onClick)
+                .background(
+                    color = Color(android.graphics.Color.parseColor(ColorUtils.colorForGroup(group))),
+                    shape = CircleShape
+                )
+                .border(
+                    width = if (selected) 2.dp else 1.dp,
+                    color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
+                    shape = CircleShape
+                )
+        )
+        Text(
+            text = group.name,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun ColorBox(colorHex: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .background(Color(android.graphics.Color.parseColor(colorHex)))
+            .border(1.dp, Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = colorHex,
+            color = ColorUtils.getContrastTextColor(Color(android.graphics.Color.parseColor(colorHex))),
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }

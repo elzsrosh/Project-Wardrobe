@@ -1,22 +1,37 @@
 package com.example.wardrobecomposer.repository
 
+import com.example.wardrobecomposer.api.ColorApiService
 import com.example.wardrobecomposer.model.item.Item
-import com.example.wardrobecomposer.model.item.StyleTip
+import javax.inject.Inject
 
-object RemoteServices {
-    suspend fun getItems(): List<Item> = emptyList()
+class RemoteServices @Inject constructor(
+    private val colorApi: ColorApiService
+) {
+    suspend fun generateColorPalette(baseColor: String? = null): List<String> {
+        return try {
+            val request = if (baseColor != null) {
+                val rgb = convertHexToRgb(baseColor)
+                ColorApiService.ColorRequest(input = listOf(rgb, "N", "N", "N", "N"))
+            } else {
+                ColorApiService.ColorRequest()
+            }
 
-    suspend fun getPantonePaletteForColor(color: String): List<String> {
-        return listOf("PANTONE 13-0647 Illuminating", "PANTONE 17-5104 Ultimate Gray")
+            val response = colorApi.generateColorPalette(request)
+            response.result.take(3).map { rgb -> // Берем первые 3 цвета
+                String.format("#%02x%02x%02x", rgb[0], rgb[1], rgb[2])
+            }
+        } catch (e: Exception) {
+            // Fallback colors
+            listOf("#FF5733", "#33FF57", "#3357FF")
+        }
     }
 
-    suspend fun generateColorSchemeFromImage(imagePath: String): List<String> {
-        return listOf("#FFB6C1", "#FFD700", "#90EE90")
+    private fun convertHexToRgb(hexColor: String): List<Int> {
+        val color = android.graphics.Color.parseColor(hexColor)
+        return listOf(
+            android.graphics.Color.red(color),
+            android.graphics.Color.green(color),
+            android.graphics.Color.blue(color)
+        )
     }
-
-    suspend fun uploadImageToCloud(imagePath: String) {
-        // TODO: Implement cloud upload
-    }
-
-    suspend fun getStyleTips(): List<StyleTip> = emptyList()
 }
