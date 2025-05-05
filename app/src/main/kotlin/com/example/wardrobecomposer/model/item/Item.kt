@@ -20,7 +20,6 @@ data class Item(
         val colorGroup: ColorGroup
     ) {
         enum class ColorGroup { NEUTRAL, WARM, COOL, EARTH, PASTEL, BRIGHT }
-
         val isWarm: Boolean get() = colorGroup == ColorGroup.WARM || colorGroup == ColorGroup.EARTH
         val isCool: Boolean get() = colorGroup == ColorGroup.COOL || colorGroup == ColorGroup.BRIGHT
     }
