@@ -1,7 +1,8 @@
 @file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.compose.foundation.layout.ExperimentalLayoutApi::class
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class
 )
+
 package com.example.wardrobecomposer.ui.screens
 
 import androidx.compose.foundation.BorderStroke
@@ -43,12 +44,12 @@ fun AddItemScreen(
             onClick = { navController.navigateUp() },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
         ) {
-            Text("Назад")
+            Text("НАЗАД")
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Добавить новую вещь", style = MaterialTheme.typography.headlineMedium)
+        Text("ДОБАВИТЬ НОВУЮ ВЕЩЬ", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -57,71 +58,171 @@ fun AddItemScreen(
                 OutlinedTextField(
                     value = itemName,
                     onValueChange = { itemName = it },
-                    label = { Text("Название вещи") },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    label = { Text("НАЗВАНИЕ ВЕЩИ") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Категория:", style = MaterialTheme.typography.titleMedium)
+                Text("КАТЕГОРИЯ:", style = MaterialTheme.typography.titleMedium)
+
+                // Первая строка категорий
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Item.Category.values().forEach { category ->
+                    Item.Category.values().take(3).forEach { category ->
                         FilterChip(
                             selected = selectedCategory == category,
                             onClick = { selectedCategory = category },
-                            label = { Text(category.name) }
+                            label = { Text(category.name.uppercase()) }
+                        )
+                    }
+                }
+
+                // Вторая строка категорий
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Item.Category.values().drop(3).forEach { category ->
+                        FilterChip(
+                            selected = selectedCategory == category,
+                            onClick = { selectedCategory = category },
+                            label = { Text(category.name.uppercase()) }
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Материал:", style = MaterialTheme.typography.titleMedium)
+                Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium)
+
+                // Первая строка материалов
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Item.Material.values().forEach { material ->
+                    Item.Material.values().take(3).forEach { material ->
                         FilterChip(
                             selected = selectedMaterial == material,
                             onClick = { selectedMaterial = material },
-                            label = { Text(material.name) }
+                            label = { Text(material.name.uppercase()) }
+                        )
+                    }
+                }
+
+                // Вторая строка материалов
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Item.Material.values().drop(3).forEach { material ->
+                        FilterChip(
+                            selected = selectedMaterial == material,
+                            onClick = { selectedMaterial = material },
+                            label = { Text(material.name.uppercase()) }
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Стиль (можно выбрать несколько):", style = MaterialTheme.typography.titleMedium)
+                Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):",
+                    style = MaterialTheme.typography.titleMedium)
+
+                // Первая строка стилей
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Item.Style.values().forEach { style ->
+                    Item.Style.values().take(3).forEach { style ->
                         FilterChip(
                             selected = style in selectedStyles,
                             onClick = {
                                 if (style in selectedStyles) selectedStyles.remove(style)
                                 else selectedStyles.add(style)
                             },
-                            label = { Text(style.name) }
+                            label = { Text(style.name.uppercase()) }
+                        )
+                    }
+                }
+
+                // Вторая строка стилей
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Item.Style.values().drop(3).forEach { style ->
+                        FilterChip(
+                            selected = style in selectedStyles,
+                            onClick = {
+                                if (style in selectedStyles) selectedStyles.remove(style)
+                                else selectedStyles.add(style)
+                            },
+                            label = { Text(style.name.uppercase()) }
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Цвет:", style = MaterialTheme.typography.titleMedium)
+                Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium)
+
+                // Первая строка цветов
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Item.Color.ColorGroup.values().forEach { colorGroup ->
+                    Item.Color.ColorGroup.values().take(6).forEach { colorGroup ->
+                        ColorSquare(
+                            color = colorForGroup(colorGroup),
+                            selected = selectedColorGroup == colorGroup,
+                            onClick = { selectedColorGroup = colorGroup }
+                        )
+                    }
+                }
+
+                // Вторая строка цветов
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Item.Color.ColorGroup.values().drop(6).take(6).forEach { colorGroup ->
+                        ColorSquare(
+                            color = colorForGroup(colorGroup),
+                            selected = selectedColorGroup == colorGroup,
+                            onClick = { selectedColorGroup = colorGroup }
+                        )
+                    }
+                }
+
+                // Третья строка цветов
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Item.Color.ColorGroup.values().drop(12).forEach { colorGroup ->
                         ColorSquare(
                             color = colorForGroup(colorGroup),
                             selected = selectedColorGroup == colorGroup,
@@ -134,8 +235,10 @@ fun AddItemScreen(
 
                 Button(
                     onClick = {
-                        if (itemName.isNotBlank() && selectedCategory != null &&
-                            selectedMaterial != null && selectedStyles.isNotEmpty() &&
+                        if (itemName.isNotBlank() &&
+                            selectedCategory != null &&
+                            selectedMaterial != null &&
+                            selectedStyles.isNotEmpty() &&
                             selectedColorGroup != null
                         ) {
                             val newItem = Item(
@@ -145,7 +248,7 @@ fun AddItemScreen(
                                 material = selectedMaterial!!,
                                 style = selectedStyles.first(),
                                 color = Item.Color(
-                                    hex = "#000000", // Можно добавить hex для каждого цвета
+                                    hex = "#000000",
                                     colorGroup = selectedColorGroup!!
                                 ),
                                 imageUri = ""
@@ -154,13 +257,19 @@ fun AddItemScreen(
                             navController.navigateUp()
                         }
                     },
-                    enabled = itemName.isNotBlank() && selectedCategory != null &&
-                            selectedMaterial != null && selectedStyles.isNotEmpty() &&
+                    enabled = itemName.isNotBlank() &&
+                            selectedCategory != null &&
+                            selectedMaterial != null &&
+                            selectedStyles.isNotEmpty() &&
                             selectedColorGroup != null,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
-                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2196F3)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
                 ) {
-                    Text("Сохранить")
+                    Text("СОХРАНИТЬ")
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -168,7 +277,6 @@ fun AddItemScreen(
     }
 }
 
-// Квадратик цвета
 @Composable
 fun ColorSquare(
     color: Color,
@@ -185,12 +293,22 @@ fun ColorSquare(
     ) {}
 }
 
-// Маппинг группы цвета на реальный цвет
 fun colorForGroup(group: Item.Color.ColorGroup): Color = when (group) {
-    Item.Color.ColorGroup.NEUTRAL -> Color(0xFFB0BEC5)
-    Item.Color.ColorGroup.WARM -> Color(0xFFFFB300)
-    Item.Color.ColorGroup.COOL -> Color(0xFF64B5F6)
-    Item.Color.ColorGroup.EARTH -> Color(0xFF8D6E63)
-    Item.Color.ColorGroup.PASTEL -> Color(0xFFFFF59D)
-    Item.Color.ColorGroup.BRIGHT -> Color(0xFFE040FB)
+    Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> Color(0xFFB0BEC5)
+    Item.Color.ColorGroup.ТЁПЛЫЙ -> Color(0xFFFFB300)
+    Item.Color.ColorGroup.ХОЛОДНЫЙ -> Color(0xFF64B5F6)
+    Item.Color.ColorGroup.ЗЕМЛЯНОЙ -> Color(0xFF8D6E63)
+    Item.Color.ColorGroup.ПАСТЕЛЬНЫЙ -> Color(0xFFFFF59D)
+    Item.Color.ColorGroup.ЯРКИЙ -> Color(0xFFE040FB)
+    Item.Color.ColorGroup.КРАСНЫЙ -> Color(0xFFF44336)
+    Item.Color.ColorGroup.ОРАНЖЕВЫЙ -> Color(0xFFFF9800)
+    Item.Color.ColorGroup.ЖЁЛТЫЙ -> Color(0xFFFFEB3B)
+    Item.Color.ColorGroup.ЗЕЛЁНЫЙ -> Color(0xFF4CAF50)
+    Item.Color.ColorGroup.СИНИЙ -> Color(0xFF2196F3)
+    Item.Color.ColorGroup.ФИОЛЕТОВЫЙ -> Color(0xFF9C27B0)
+    Item.Color.ColorGroup.РОЗОВЫЙ -> Color(0xFFE91E63)
+    Item.Color.ColorGroup.КОРИЧНЕВЫЙ -> Color(0xFF795548)
+    Item.Color.ColorGroup.СЕРЫЙ -> Color(0xFF9E9E9E)
+    Item.Color.ColorGroup.ЧЁРНЫЙ -> Color(0xFF000000)
+    Item.Color.ColorGroup.БЕЛЫЙ -> Color(0xFFFFFFFF)
 }

@@ -49,19 +49,19 @@ class WardrobeRepository @Inject constructor(
     ): Boolean {
         val colorCompatible = when {
             item1.color.colorGroup == item2.color.colorGroup -> true
-            item1.color.colorGroup == Item.Color.ColorGroup.NEUTRAL -> true
-            item2.color.colorGroup == Item.Color.ColorGroup.NEUTRAL -> true
+            item1.color.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
+            item2.color.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
             else -> ColorAnalyzer.areColorsHarmonious(item1.color, item2.color)
         }
 
         val style = desiredStyle ?: item1.style
         val styleCompatible = item2.style == style ||
-                item2.style == Item.Style.CASUAL ||
-                item1.style == Item.Style.CASUAL
+                item2.style == Item.Style.ПОВСЕДНЕВНЫЙ ||
+                item1.style == Item.Style.ПОВСЕДНЕВНЫЙ
 
         val categoryCompatible = when (item1.category) {
-            Item.Category.TOP -> item2.category != Item.Category.TOP
-            Item.Category.BOTTOM -> item2.category != Item.Category.BOTTOM
+            Item.Category.ВЕРХ -> item2.category != Item.Category.ВЕРХ
+            Item.Category.НИЗ -> item2.category != Item.Category.НИЗ
             else -> true
         }
 
@@ -74,7 +74,7 @@ class WardrobeRepository @Inject constructor(
         desiredStyle: Item.Style?
     ): Look {
         val style = desiredStyle ?: listOf(item1.style, item2.style)
-            .firstOrNull { it != Item.Style.CASUAL } ?: Item.Style.CASUAL
+            .firstOrNull { it != Item.Style.ПОВСЕДНЕВНЫЙ } ?: Item.Style.ПОВСЕДНЕВНЫЙ
 
         val colorScheme = ColorAnalyzer.analyzeColorScheme(item1.color, item2.color)
 
@@ -93,8 +93,8 @@ class WardrobeRepository @Inject constructor(
         fun areColorsHarmonious(color1: Item.Color, color2: Item.Color): Boolean {
             return when {
                 color1.colorGroup == color2.colorGroup -> true
-                color1.colorGroup == Item.Color.ColorGroup.NEUTRAL -> true
-                color2.colorGroup == Item.Color.ColorGroup.NEUTRAL -> true
+                color1.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
+                color2.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
                 color1.isWarm && color2.isWarm -> true
                 color1.isCool && color2.isCool -> true
                 else -> false
@@ -102,7 +102,7 @@ class WardrobeRepository @Inject constructor(
         }
 
         fun analyzeColorScheme(color1: Item.Color, color2: Item.Color): Look.ColorScheme {
-            val primary = if (color1.colorGroup != Item.Color.ColorGroup.NEUTRAL) color1 else color2
+            val primary = if (color1.colorGroup != Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ) color1 else color2
             val secondary = if (color1 == primary) color2 else color1
 
             return Look.ColorScheme(
@@ -116,8 +116,8 @@ class WardrobeRepository @Inject constructor(
 
         private fun areComplementary(color1: Item.Color, color2: Item.Color): Boolean {
             return when (color1.colorGroup) {
-                Item.Color.ColorGroup.WARM -> color2.colorGroup == Item.Color.ColorGroup.COOL
-                Item.Color.ColorGroup.COOL -> color2.colorGroup == Item.Color.ColorGroup.WARM
+                Item.Color.ColorGroup.ТЁПЛЫЙ -> color2.colorGroup == Item.Color.ColorGroup.ХОЛОДНЫЙ
+                Item.Color.ColorGroup.ХОЛОДНЫЙ -> color2.colorGroup == Item.Color.ColorGroup.ТЁПЛЫЙ
                 else -> false
             }
         }

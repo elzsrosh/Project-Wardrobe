@@ -56,7 +56,7 @@ fun SplashScreen(onStartClicked: () -> Unit) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Wardrobe Composer",
+                text = "Гардероб Композитор",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -75,7 +75,7 @@ fun SplashScreen(onStartClicked: () -> Unit) {
             Button(
                 onClick = onStartClicked,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2196F3), // Синий цвет
+                    containerColor = Color(0xFF2196F3),
                     contentColor = Color.White
                 ),
                 modifier = Modifier
