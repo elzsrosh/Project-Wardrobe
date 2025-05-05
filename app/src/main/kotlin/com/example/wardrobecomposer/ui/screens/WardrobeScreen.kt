@@ -3,12 +3,17 @@ package com.example.wardrobecomposer.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wardrobecomposer.model.item.Item
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WardrobeScreen(
     onBackClick: () -> Unit,
@@ -16,33 +21,47 @@ fun WardrobeScreen(
     items: List<Item>,
     onItemClick: (Item) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Button(onClick = onBackClick) {
-            Text("Назад")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Мой гардероб") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Назад")
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onAddItemClick,
+                icon = { Icon(Icons.Filled.Add, contentDescription = "Добавить") },
+                text = { Text("Добавить вещь") }
+            )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = onAddItemClick) {
-            Text("Добавить вещь")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (items.isEmpty()) {
-            Text("Нет добавленных вещей")
-        } else {
-            LazyColumn {
-                items(items) { item ->
-                    ItemCard(
-                        item = item,
-                        onClick = { onItemClick(item) }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            if (items.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Нет добавленных вещей")
+                }
+            } else {
+                LazyColumn {
+                    items(items) { item ->
+                        ItemCard(
+                            item = item,
+                            onClick = { onItemClick(item) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }

@@ -4,9 +4,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LookDetailsScreen(
-    lookId: String,
+fun ItemDetailsScreen(
+    itemId: String,
     onBackClick: () -> Unit
 ) {
-    Text("Детали образа: $lookId")
+    Text("Детали вещи: $itemId")
 }

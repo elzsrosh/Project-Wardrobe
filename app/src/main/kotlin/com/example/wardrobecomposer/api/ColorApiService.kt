@@ -11,7 +11,8 @@ interface ColorApiService {
 
     data class ColorRequest(
         val model: String = "default",
-        val input: List<Any>? = null // [R,G,B] или "N" для случайного
+        val input: List<Any>? = null, // [R,G,B] или "N" для случайного
+        val paletteType: String? = null // "analogous", "complementary", "monochromatic"
     )
 
     data class ColorPaletteResponse(

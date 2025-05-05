@@ -10,10 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.model.item.Look
 import com.example.wardrobecomposer.ui.screens.*
 import com.example.wardrobecomposer.ui.theme.WardrobeComposerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,8 +44,8 @@ class MainActivity : ComponentActivity() {
 fun WardrobeApp() {
     val navController = rememberNavController()
     val viewModel: WardrobeViewModel = hiltViewModel()
-    val items by viewModel.items.collectAsState()
-    val looks by viewModel.looks.collectAsState()
+    val items: List<Item> by viewModel.items.collectAsState()
+    val looks: List<Look> by viewModel.looks.collectAsState()
 
     NavHost(
         navController = navController,
@@ -52,6 +57,7 @@ fun WardrobeApp() {
                 onGeneratorClick = { navController.navigate("generator_options") }
             )
         }
+
         composable("wardrobe") {
             WardrobeScreen(
                 onBackClick = { navController.popBackStack() },
@@ -62,6 +68,7 @@ fun WardrobeApp() {
                 }
             )
         }
+
         composable("add_item") {
             AddItemScreen(
                 navController = navController,
@@ -71,20 +78,22 @@ fun WardrobeApp() {
                 }
             )
         }
+
         composable("generator_options") {
             GeneratorOptionsScreen(
                 onBackClick = { navController.popBackStack() },
-                onGenerateByColorClick = { navController.navigate("generate_by_color") },
+                onGenerateByColorClick = { navController.navigate("color_palette") },
                 onGenerateByItemClick = { navController.navigate("generate_by_item") }
             )
         }
-        composable("generate_by_color") {
-            GenerateByColorScreen(
+
+        composable("color_palette") {
+            ColorPaletteScreen(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() },
-                onGenerateLooks = { navController.navigate("looks_list") }
+                onBackClick = { navController.popBackStack() }
             )
         }
+
         composable("generate_by_item") {
             GenerateByItemScreen(
                 items = items,
@@ -95,6 +104,7 @@ fun WardrobeApp() {
                 }
             )
         }
+
         composable("looks_list") {
             LooksListScreen(
                 looks = looks,
@@ -104,9 +114,24 @@ fun WardrobeApp() {
                 }
             )
         }
-        composable("look_detail/{lookId}") { backStackEntry ->
+
+        composable(
+            route = "item_detail/{itemId}",
+            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+            ItemDetailsScreen(
+                itemId = itemId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "look_detail/{lookId}",
+            arguments = listOf(navArgument("lookId") { type = NavType.StringType })
+        ) { backStackEntry ->
             val lookId = backStackEntry.arguments?.getString("lookId") ?: ""
-            LookDetailScreen(
+            LookDetailsScreen(
                 lookId = lookId,
                 onBackClick = { navController.popBackStack() }
             )

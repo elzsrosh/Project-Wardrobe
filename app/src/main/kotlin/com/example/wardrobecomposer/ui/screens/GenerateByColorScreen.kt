@@ -36,7 +36,6 @@ fun GenerateByColorScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Text("Выберите цветовую группу:", style = MaterialTheme.typography.titleLarge)
 
-        // Разбиваем на группы по 5 элементов
         val groupedColors = Item.Color.ColorGroup.values().toList().chunked(5)
 
         groupedColors.forEach { rowGroups ->
@@ -86,7 +85,7 @@ fun GenerateByColorScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 colorPalette.forEach { colorHex ->
-                    ColorBox(
+                    ColorBoxItem(
                         colorHex = colorHex,
                         modifier = Modifier.size(100.dp)
                     )
@@ -138,22 +137,6 @@ fun ColorGroupButton(
             text = group.name,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 4.dp)
-        )
-    }
-}
-
-@Composable
-fun ColorBox(colorHex: String, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .background(Color(android.graphics.Color.parseColor(colorHex)))
-            .border(1.dp, Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = colorHex,
-            color = ColorUtils.getContrastTextColor(Color(android.graphics.Color.parseColor(colorHex))),
-            style = MaterialTheme.typography.labelSmall
         )
     }
 }
