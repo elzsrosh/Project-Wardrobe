@@ -11,11 +11,11 @@ interface ColorApiService {
 
     data class ColorRequest(
         val model: String = "default",
-        val input: List<Any>? = null, // [R,G,B] или "N" для случайного
-        val paletteType: String? = null // "analogous", "complementary", "monochromatic"
+        val input: List<Any>? = null,
+        val paletteType: String? = null
     )
 
     data class ColorPaletteResponse(
-        val result: List<List<Int>> // [[R,G,B], [R,G,B], [R,G,B], [R,G,B], [R,G,B]]
+        val result: List<List<Int>>
     )
 }

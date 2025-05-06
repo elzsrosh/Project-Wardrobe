@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.wardrobecomposer.model.item.Item
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,13 +80,24 @@ fun ItemCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(item.name, style = MaterialTheme.typography.headlineSmall)
-            Text("Категория: ${item.category.name}")
-            Text("Цвет: ${item.color.colorGroup.name}")
-            Text("Стиль: ${item.style.name}")
+            if (item.imageUri.isNotEmpty()) {
+                AsyncImage(
+                    model = item.imageUri,
+                    contentDescription = item.name,
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(item.name, style = MaterialTheme.typography.headlineSmall)
+                Text("Категория: ${item.category.name}")
+                Text("Цвет: ${item.color.colorGroup.name}")
+                Text("Стиль: ${item.style.name}")
+            }
         }
     }
 }

@@ -1,16 +1,23 @@
 package com.example.wardrobecomposer.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,8 +32,28 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val permissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA
+    )
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        // Handle permission results if needed
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (permissions.any {
+                    ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+                }) {
+                requestPermissionLauncher.launch(permissions)
+            }
+        }
+
         setContent {
             WardrobeComposerTheme {
                 Surface(

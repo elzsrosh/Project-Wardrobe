@@ -13,20 +13,20 @@ class RemoteServices @Inject constructor(
         val request = if (baseColor != null) {
             val rgb = convertHexToRgb(baseColor)
             ColorApiService.ColorRequest(
-                input = when (paletteType) {
-                    "complementary" -> listOf(rgb, "N", "N", "N", "N")
-                    "monochromatic" -> listOf(rgb, rgb, rgb, rgb, rgb)
-                    else -> listOf(rgb, "N", "N", "N", "N") // analogous by default
-                },
+                input = listOf(rgb, "N", "N", "N", "N"),
                 paletteType = paletteType
             )
         } else {
             ColorApiService.ColorRequest(paletteType = paletteType)
         }
 
-        val response = colorApi.generateColorPalette(request)
-        return response.result.take(3).map { rgb ->
-            String.format("#%02x%02x%02x", rgb[0], rgb[1], rgb[2])
+        return try {
+            val response = colorApi.generateColorPalette(request)
+            response.result.take(5).map { rgb ->
+                String.format("#%02x%02x%02x", rgb[0], rgb[1], rgb[2])
+            }
+        } catch (e: Exception) {
+            emptyList() // Возвращаем пустой список в случае ошибки
         }
     }
 
