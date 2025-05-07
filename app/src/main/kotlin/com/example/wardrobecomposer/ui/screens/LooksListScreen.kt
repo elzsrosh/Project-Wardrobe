@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -9,16 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wardrobecomposer.model.item.Look
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun LooksListScreen(
     looks: List<Look>,
     onBackClick: () -> Unit,
-    onLookClick: (Look) -> Unit
+    onLookClick: (Look) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         Button(onClick = onBackClick) {
             Text("Назад")
@@ -37,7 +41,7 @@ fun LooksListScreen(
                 items(looks) { look ->
                     LookCard(
                         look = look,
-                        onClick = { onLookClick(look) }
+                        onClick = { onLookClick(look) },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -46,19 +50,20 @@ fun LooksListScreen(
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LookCard(
     look: Look,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(look.name, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))

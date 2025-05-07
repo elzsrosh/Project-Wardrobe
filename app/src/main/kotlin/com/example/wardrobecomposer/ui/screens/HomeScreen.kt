@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -6,29 +8,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.background
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun HomeScreen(
     onWardrobeClick: () -> Unit,
-    onGeneratorClick: () -> Unit
+    onGeneratorClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Button(
             onClick = onWardrobeClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
         ) {
             Text("Мой гардероб")
         }
@@ -37,9 +38,10 @@ fun HomeScreen(
 
         Button(
             onClick = onGeneratorClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
         ) {
             Text("Генератор образов")
         }

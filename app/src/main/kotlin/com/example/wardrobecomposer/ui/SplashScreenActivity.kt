@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui
 
 import android.content.Intent
@@ -5,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -27,7 +28,7 @@ class SplashScreenActivity : ComponentActivity() {
             WardrobeComposerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = Color.White,
                 ) {
                     SplashScreen {
                         startActivity(Intent(this, MainActivity::class.java))
@@ -39,21 +40,22 @@ class SplashScreenActivity : ComponentActivity() {
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun SplashScreen(onStartClicked: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp)
+            modifier = Modifier.padding(24.dp),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_wardrobe),
                 contentDescription = "Логотип",
                 modifier = Modifier.size(150.dp),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -62,7 +64,7 @@ fun SplashScreen(onStartClicked: () -> Unit) {
                 text = "Гардероб Композитор",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -70,20 +72,22 @@ fun SplashScreen(onStartClicked: () -> Unit) {
             Text(
                 text = "Создайте идеальный гардероб",
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = Color.Gray,
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
             Button(
                 onClick = onStartClicked,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2196F3),
-                    contentColor = Color.White
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2196F3),
+                        contentColor = Color.White,
+                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
             ) {
                 Text("Начать", fontSize = 18.sp)
             }

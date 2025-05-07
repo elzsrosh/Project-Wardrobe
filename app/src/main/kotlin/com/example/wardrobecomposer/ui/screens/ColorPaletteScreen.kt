@@ -1,5 +1,9 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,16 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.example.wardrobecomposer.utils.ColorPickerDialog
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 
+@Suppress("ktlint:standard:function-naming")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPaletteScreen(
     viewModel: WardrobeViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
     val colorPalette by viewModel.colorPalette.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -32,25 +34,26 @@ fun ColorPaletteScreen(
     var selectedColor by remember { mutableStateOf(Color(0xFF2196F3)) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Назад"
+                    contentDescription = "Назад",
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Генератор цветовой палитры",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         }
 
@@ -58,7 +61,7 @@ fun ColorPaletteScreen(
 
         Button(
             onClick = { showColorPicker = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Выбрать базовый цвет")
         }
@@ -66,10 +69,11 @@ fun ColorPaletteScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier
-                .size(100.dp)
-                .background(selectedColor)
-                .border(1.dp, Color.Black)
+            modifier =
+                Modifier
+                    .size(100.dp)
+                    .background(selectedColor)
+                    .border(1.dp, Color.Black),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -77,19 +81,19 @@ fun ColorPaletteScreen(
         Text(
             text = "Тип палитры:",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(viewModel.paletteTypes) { (type, name) ->
                 FilterChip(
                     selected = selectedPaletteType == type,
                     onClick = { viewModel.setPaletteType(type) },
-                    label = { Text(name) }
+                    label = { Text(name) },
                 )
             }
         }
@@ -103,14 +107,15 @@ fun ColorPaletteScreen(
             },
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
                 Text("Сгенерировать палитру")
@@ -124,7 +129,7 @@ fun ColorPaletteScreen(
                 text = message,
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -133,18 +138,18 @@ fun ColorPaletteScreen(
             isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
             }
             colorPalette.isNotEmpty() -> {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = "Результат:",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     ColorPaletteView(palette = colorPalette)
@@ -153,11 +158,11 @@ fun ColorPaletteScreen(
             else -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = "Палитра не сгенерирована",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
@@ -171,19 +176,20 @@ fun ColorPaletteScreen(
                 selectedColor = color
                 showColorPicker = false
             },
-            onDismiss = { showColorPicker = false }
+            onDismiss = { showColorPicker = false },
         )
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ColorPaletteView(palette: List<String>) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             palette.forEach { colorHex ->
                 ColorBoxItem(colorHex = colorHex)
@@ -194,32 +200,34 @@ fun ColorPaletteView(palette: List<String>) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             palette.forEach { colorHex ->
                 Text(
                     text = colorHex,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
         }
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ColorBoxItem(
     colorHex: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(4.dp)
+        modifier = modifier.padding(4.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(80.dp)
-                .background(Color(android.graphics.Color.parseColor(colorHex)))
-                .border(1.dp, Color.Black)
+            modifier =
+                Modifier
+                    .size(80.dp)
+                    .background(Color(android.graphics.Color.parseColor(colorHex)))
+                    .border(1.dp, Color.Black),
         )
     }
 }

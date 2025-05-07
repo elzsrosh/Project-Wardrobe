@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.utils
 
 import androidx.compose.foundation.layout.*
@@ -5,23 +7,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.github.skydoves.colorpicker.compose.*
+import com.github.skydoves.colorpicker.compose.AlphaSlider
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ColorPickerDialog(
     initialColor: Color,
     onColorSelected: (Color) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val controller = rememberColorPickerController()
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.extraLarge,
-            modifier = Modifier.width(300.dp)
+            modifier = Modifier.width(300.dp),
         ) {
             Column(Modifier.padding(16.dp)) {
                 Text("Выберите цвет", style = MaterialTheme.typography.titleLarge)
@@ -30,8 +34,8 @@ fun ColorPickerDialog(
                 HsvColorPicker(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                     controller = controller,
-                    initialColor = initialColor, // ✅ Set initial color here
-                    onColorChanged = {}
+                    initialColor = initialColor,
+                    onColorChanged = {},
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -40,7 +44,7 @@ fun ColorPickerDialog(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("Отмена")
@@ -50,7 +54,7 @@ fun ColorPickerDialog(
                         onClick = {
                             onColorSelected(controller.selectedColor.value)
                             onDismiss()
-                        }
+                        },
                     ) {
                         Text("OK")
                     }

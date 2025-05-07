@@ -5,14 +5,16 @@ import com.example.wardrobecomposer.model.item.Item
 
 object ColorUtils {
     fun getContrastTextColor(backgroundColor: Color): Color {
-        val luminance = (0.299 * backgroundColor.red +
+        val luminance = (
+            0.299 * backgroundColor.red +
                 0.587 * backgroundColor.green +
-                0.114 * backgroundColor.blue)
+                0.114 * backgroundColor.blue
+        )
         return if (luminance > 0.5) Color.Black else Color.White
     }
 
-    fun colorForGroup(group: Item.Color.ColorGroup): String {
-        return when (group) {
+    fun colorForGroup(group: Item.Color.ColorGroup): String =
+        when (group) {
             Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> "#B0BEC5"
             Item.Color.ColorGroup.ТЁПЛЫЙ -> "#FFB300"
             Item.Color.ColorGroup.ХОЛОДНЫЙ -> "#64B5F6"
@@ -32,5 +34,4 @@ object ColorUtils {
             Item.Color.ColorGroup.БЕЛЫЙ -> "#FFFFFF"
             else -> "#000000" // Добавлен else для полноты when
         }
-    }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui
 
 import android.Manifest
@@ -10,13 +12,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -32,16 +31,16 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val permissions = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.CAMERA
-    )
+    private val permissions =
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+        )
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        // Handle permission results if needed
-    }
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions(),
+        ) { /* Можно обработать результаты, если нужно */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +48,8 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (permissions.any {
                     ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-                }) {
+                }
+            ) {
                 requestPermissionLauncher.launch(permissions)
             }
         }
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
             WardrobeComposerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     WardrobeApp()
                 }
@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun WardrobeApp() {
     val navController = rememberNavController()
@@ -74,14 +75,11 @@ fun WardrobeApp() {
     val items: List<Item> by viewModel.items.collectAsState()
     val looks: List<Look> by viewModel.looks.collectAsState()
 
-    NavHost(
-        navController = navController,
-        startDestination = "home"
-    ) {
+    NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(
                 onWardrobeClick = { navController.navigate("wardrobe") },
-                onGeneratorClick = { navController.navigate("generator_options") }
+                onGeneratorClick = { navController.navigate("generator_options") },
             )
         }
 
@@ -92,7 +90,7 @@ fun WardrobeApp() {
                 items = items,
                 onItemClick = { item ->
                     navController.navigate("item_detail/${item.id}")
-                }
+                },
             )
         }
 
@@ -102,7 +100,7 @@ fun WardrobeApp() {
                 onItemAdded = { newItem ->
                     viewModel.addItem(newItem)
                     navController.popBackStack()
-                }
+                },
             )
         }
 
@@ -110,14 +108,14 @@ fun WardrobeApp() {
             GeneratorOptionsScreen(
                 onBackClick = { navController.popBackStack() },
                 onGenerateByColorClick = { navController.navigate("color_palette") },
-                onGenerateByItemClick = { navController.navigate("generate_by_item") }
+                onGenerateByItemClick = { navController.navigate("generate_by_item") },
             )
         }
 
         composable("color_palette") {
             ColorPaletteScreen(
                 viewModel = viewModel,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
             )
         }
 
@@ -128,7 +126,7 @@ fun WardrobeApp() {
                 onGenerate = { item ->
                     viewModel.generateLooksByItem(item)
                     navController.navigate("looks_list")
-                }
+                },
             )
         }
 
@@ -138,29 +136,33 @@ fun WardrobeApp() {
                 onBackClick = { navController.popBackStack() },
                 onLookClick = { look ->
                     navController.navigate("look_detail/${look.id}")
-                }
+                },
             )
         }
 
         composable(
             route = "item_detail/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+            arguments = listOf(navArgument("itemId") { type = NavType.StringType }),
         ) { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            ItemDetailsScreen(
-                itemId = itemId,
-                onBackClick = { navController.popBackStack() }
+            val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
+            val item = items.find { it.id == itemId } ?: return@composable
+
+            itemDetailsScreen(
+                item = item,
+                onBackClick = { navController.popBackStack() },
             )
         }
 
         composable(
             route = "look_detail/{lookId}",
-            arguments = listOf(navArgument("lookId") { type = NavType.StringType })
+            arguments = listOf(navArgument("lookId") { type = NavType.StringType }),
         ) { backStackEntry ->
-            val lookId = backStackEntry.arguments?.getString("lookId") ?: ""
-            LookDetailsScreen(
-                lookId = lookId,
-                onBackClick = { navController.popBackStack() }
+            val lookId = backStackEntry.arguments?.getString("lookId") ?: return@composable
+            val look = looks.find { it.id == lookId } ?: return@composable
+
+            LookDetailScreen(
+                look = look,
+                onBackClick = { navController.popBackStack() },
             )
         }
     }
