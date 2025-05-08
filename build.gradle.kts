@@ -1,10 +1,11 @@
-// build.gradle.kts
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.23.0").apply(false)
+}
 
 buildscript {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jitpack.io")
     }
     dependencies {
         val kotlinVersion = "1.8.21"
@@ -12,11 +13,6 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.48")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.0")
     }
-}
-
-plugins {
-    id("com.android.application") version "8.1.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.21" apply false
-    id("com.google.dagger.hilt.android") version "2.48" apply false
 }

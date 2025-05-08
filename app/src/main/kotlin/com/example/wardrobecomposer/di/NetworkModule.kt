@@ -1,6 +1,7 @@
 package com.example.wardrobecomposer.di
 
 import com.example.wardrobecomposer.api.ColorApiService
+import com.example.wardrobecomposer.api.ImageUploadService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,4 +44,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideColorApiService(retrofit: Retrofit): ColorApiService = retrofit.create(ColorApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideImageUploadService(retrofit: Retrofit): ImageUploadService = retrofit.create(ImageUploadService::class.java)
 }

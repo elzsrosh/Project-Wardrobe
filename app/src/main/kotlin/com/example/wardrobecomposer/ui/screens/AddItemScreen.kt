@@ -5,11 +5,8 @@ package com.example.wardrobecomposer.ui.screens
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,6 +32,7 @@ fun AddItemScreen(
     val selectedStyles = remember { mutableStateListOf<Item.Style>() }
     var selectedColorGroup by remember { mutableStateOf<Item.Color.ColorGroup?>(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var itemImageUrl by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val galleryLauncher =
@@ -64,253 +62,256 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LazyColumn {
-            item {
-                OutlinedTextField(
-                    value = itemName,
-                    onValueChange = { itemName = it },
-                    label = { Text("НАЗВАНИЕ ВЕЩИ") },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+        OutlinedTextField(
+            value = itemName,
+            onValueChange = { itemName = it },
+            label = { Text("НАЗВАНИЕ ВЕЩИ") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("URL изображения:")
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = itemImageUrl,
+            onValueChange = { itemImageUrl = it },
+            label = { Text("Введите URL изображения") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Изображение:", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (imageUri != null) {
+            AsyncImage(
+                model = imageUri,
+                contentDescription = "Выбранное изображение",
+                modifier =
+                    Modifier
+                        .size(120.dp)
+                        .clickable { galleryLauncher.launch("image/*") },
+            )
+        } else {
+            Button(
+                onClick = { galleryLauncher.launch("image/*") },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Выбрать изображение")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("КАТЕГОРИЯ:", style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Category.values().take(3).forEach { category ->
+                FilterChip(
+                    selected = selectedCategory == category,
+                    onClick = { selectedCategory = category },
+                    label = { Text(category.name.uppercase()) },
                 )
+            }
+        }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Изображение:", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Category.values().drop(3).forEach { category ->
+                FilterChip(
+                    selected = selectedCategory == category,
+                    onClick = { selectedCategory = category },
+                    label = { Text(category.name.uppercase()) },
+                )
+            }
+        }
 
-                if (imageUri != null) {
-                    AsyncImage(
-                        model = imageUri,
-                        contentDescription = "Выбранное изображение",
-                        modifier =
-                            Modifier
-                                .size(120.dp)
-                                .clickable { galleryLauncher.launch("image/*") },
-                    )
-                } else {
-                    Button(
-                        onClick = { galleryLauncher.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text("Выбрать изображение")
-                    }
-                }
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("КАТЕГОРИЯ:", style = MaterialTheme.typography.titleMedium)
+        Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Material.values().take(3).forEach { material ->
+                FilterChip(
+                    selected = selectedMaterial == material,
+                    onClick = { selectedMaterial = material },
+                    label = { Text(material.name.uppercase()) },
+                )
+            }
+        }
 
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Category.values().take(3).forEach { category ->
-                        FilterChip(
-                            selected = selectedCategory == category,
-                            onClick = { selectedCategory = category },
-                            label = { Text(category.name.uppercase()) },
-                        )
-                    }
-                }
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Material.values().drop(3).forEach { material ->
+                FilterChip(
+                    selected = selectedMaterial == material,
+                    onClick = { selectedMaterial = material },
+                    label = { Text(material.name.uppercase()) },
+                )
+            }
+        }
 
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Category.values().drop(3).forEach { category ->
-                        FilterChip(
-                            selected = selectedCategory == category,
-                            onClick = { selectedCategory = category },
-                            label = { Text(category.name.uppercase()) },
-                        )
-                    }
-                }
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium)
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Material.values().take(3).forEach { material ->
-                        FilterChip(
-                            selected = selectedMaterial == material,
-                            onClick = { selectedMaterial = material },
-                            label = { Text(material.name.uppercase()) },
-                        )
-                    }
-                }
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Material.values().drop(3).forEach { material ->
-                        FilterChip(
-                            selected = selectedMaterial == material,
-                            onClick = { selectedMaterial = material },
-                            label = { Text(material.name.uppercase()) },
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):", style = MaterialTheme.typography.titleMedium)
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Style.values().take(3).forEach { style ->
-                        FilterChip(
-                            selected = style in selectedStyles,
-                            onClick = {
-                                if (style in selectedStyles) {
-                                    selectedStyles.remove(style)
-                                } else {
-                                    selectedStyles.add(style)
-                                }
-                            },
-                            label = { Text(style.name.uppercase()) },
-                        )
-                    }
-                }
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Item.Style.values().drop(3).forEach { style ->
-                        FilterChip(
-                            selected = style in selectedStyles,
-                            onClick = {
-                                if (style in selectedStyles) {
-                                    selectedStyles.remove(style)
-                                } else {
-                                    selectedStyles.add(style)
-                                }
-                            },
-                            label = { Text(style.name.uppercase()) },
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium)
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Item.Color.ColorGroup.values().take(6).forEach { colorGroup ->
-                        ColorSquare(
-                            color = getColorForGroup(colorGroup),
-                            selected = selectedColorGroup == colorGroup,
-                            onClick = { selectedColorGroup = colorGroup },
-                        )
-                    }
-                }
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Item.Color.ColorGroup.values().drop(6).take(6).forEach { colorGroup ->
-                        ColorSquare(
-                            color = getColorForGroup(colorGroup),
-                            selected = selectedColorGroup == colorGroup,
-                            onClick = { selectedColorGroup = colorGroup },
-                        )
-                    }
-                }
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Item.Color.ColorGroup.values().drop(12).forEach { colorGroup ->
-                        ColorSquare(
-                            color = getColorForGroup(colorGroup),
-                            selected = selectedColorGroup == colorGroup,
-                            onClick = { selectedColorGroup = colorGroup },
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
+        Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):", style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Style.values().take(3).forEach { style ->
+                FilterChip(
+                    selected = style in selectedStyles,
                     onClick = {
-                        if (itemName.isNotBlank() &&
-                            selectedCategory != null &&
-                            selectedMaterial != null &&
-                            selectedStyles.isNotEmpty() &&
-                            selectedColorGroup != null
-                        ) {
-                            val newItem =
-                                Item(
-                                    id = UUID.randomUUID().toString(),
-                                    name = itemName,
-                                    category = selectedCategory!!,
-                                    material = selectedMaterial!!,
-                                    style = selectedStyles.first(),
-                                    color =
-                                        Item.Color(
-                                            hex = "#000000",
-                                            colorGroup = selectedColorGroup!!,
-                                        ),
-                                    imageUri = imageUri?.toString() ?: "",
-                                )
-                            onItemAdded(newItem)
-                            navController.navigateUp()
+                        if (style in selectedStyles) {
+                            selectedStyles.remove(style)
+                        } else {
+                            selectedStyles.add(style)
                         }
                     },
-                    enabled =
-                        itemName.isNotBlank() &&
-                            selectedCategory != null &&
-                            selectedMaterial != null &&
-                            selectedStyles.isNotEmpty() &&
-                            selectedColorGroup != null,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                ) {
-                    Text("СОХРАНИТЬ")
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
+                    label = { Text(style.name.uppercase()) },
+                )
             }
+        }
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Item.Style.values().drop(3).forEach { style ->
+                FilterChip(
+                    selected = style in selectedStyles,
+                    onClick = {
+                        if (style in selectedStyles) {
+                            selectedStyles.remove(style)
+                        } else {
+                            selectedStyles.add(style)
+                        }
+                    },
+                    label = { Text(style.name.uppercase()) },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium)
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Item.Color.ColorGroup.values().take(6).forEach { group ->
+                ColorSquare(
+                    color = getColorForGroup(group),
+                    selected = selectedColorGroup == group,
+                    onClick = { selectedColorGroup = group },
+                )
+            }
+        }
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Item.Color.ColorGroup.values().drop(6).take(6).forEach { group ->
+                ColorSquare(
+                    color = getColorForGroup(group),
+                    selected = selectedColorGroup == group,
+                    onClick = { selectedColorGroup = group },
+                )
+            }
+        }
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Item.Color.ColorGroup.values().drop(12).forEach { group ->
+                ColorSquare(
+                    color = getColorForGroup(group),
+                    selected = selectedColorGroup == group,
+                    onClick = { selectedColorGroup = group },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                if (itemName.isNotBlank() &&
+                    selectedCategory != null &&
+                    selectedMaterial != null &&
+                    selectedStyles.isNotEmpty() &&
+                    selectedColorGroup != null
+                ) {
+                    val newItem =
+                        Item(
+                            id = UUID.randomUUID().toString(),
+                            name = itemName,
+                            category = selectedCategory!!,
+                            material = selectedMaterial!!,
+                            style = selectedStyles.first(),
+                            color =
+                                Item.Color(
+                                    hex = "#000000",
+                                    colorGroup = selectedColorGroup!!,
+                                ),
+                            imageUri = imageUri?.toString() ?: itemImageUrl,
+                        )
+                    onItemAdded(newItem)
+                    navController.navigateUp()
+                }
+            },
+            enabled =
+                itemName.isNotBlank() &&
+                    selectedCategory != null &&
+                    selectedMaterial != null &&
+                    selectedStyles.isNotEmpty() &&
+                    selectedColorGroup != null,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+        ) {
+            Text("СОХРАНИТЬ")
         }
     }
 }
@@ -331,11 +332,10 @@ fun ColorSquare(
                 .border(
                     width = if (selected) 2.dp else 1.dp,
                     color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
-                ).clickable { onClick() },
+                ).clickable(onClick = onClick),
     )
 }
 
-// Функция для получения цвета по группе (перенесена в отдельный файл или объект)
 fun getColorForGroup(group: Item.Color.ColorGroup): Color =
     when (group) {
         Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> Color(0xFFB0BEC5)

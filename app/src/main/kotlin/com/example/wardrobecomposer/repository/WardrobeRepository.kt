@@ -13,12 +13,11 @@ import javax.inject.Singleton
 @Singleton
 class WardrobeRepository
     @Inject
-    constructor() {
+    constructor(
+        private val remoteServices: RemoteServices,
+    ) {
         private val _items = MutableStateFlow<List<Item>>(emptyList())
         val items: Flow<List<Item>> = _items.asStateFlow()
-
-        private val _looks = MutableStateFlow<List<Look>>(emptyList())
-        val looks: Flow<List<Look>> = _looks.asStateFlow()
 
         suspend fun getAllItems(): List<Item> = _items.value
 
@@ -36,26 +35,39 @@ class WardrobeRepository
                     allItems
                         .filter { it.id != baseItem.id }
                         .filter { isItemsCompatible(baseItem, it) }
-                        .map { companionItem ->
-                            createLookFromItems(baseItem, companionItem)
-                        }
+                        .map { companionItem -> createLookFromItems(baseItem, companionItem) }
                 }
+
                 colorScheme != null -> {
                     allItems
                         .filter { item ->
                             ColorAnalyzer.areColorsHarmonious(item.color, colorScheme.primaryColor)
                         }.chunked(2)
                         .map { items ->
-                            createLookFromItems(items[0], items.getOrElse(1) { items[0] })
+                            createLookFromItems(items.getOrElse(0) { items[0] }, items.getOrElse(1) { items[0] })
                         }
                 }
+
                 else -> emptyList()
             }
         }
 
-        suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> = generateLooks(baseItem = baseItem)
+        // Генерация образа из существующей вещи
+        suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> {
+            val allItems = _items.value
+            return allItems
+                .filter { it.id != baseItem.id }
+                .filter { isItemsCompatible(baseItem, it) }
+                .map { Look.fromPair(baseItem, it) }
+        }
 
-        suspend fun generateOutfitFromNewItem(newItem: Item): List<Look> = generateLooks(baseItem = newItem)
+        // Генерация образа с новой вещью
+        suspend fun generateOutfitFromNewItem(newItem: Item): List<Look> {
+            val allItems = _items.value
+            return allItems
+                .filter { isItemsCompatible(newItem, it) }
+                .map { Look.fromPair(newItem, it) }
+        }
 
         private fun isItemsCompatible(
             item1: Item,
@@ -110,11 +122,12 @@ class WardrobeRepository
         ): String =
             buildString {
                 append("Совместимость: ")
-                if (item1.color.colorGroup == item2.color.colorGroup) {
-                    append("цветовая гамма, ")
-                }
-                if (item1.style == item2.style) {
-                    append("стиль")
-                }
+                if (item1.color.colorGroup == item2.color.colorGroup) append("цветовая гамма, ")
+                if (item1.style == item2.style) append("стиль")
             }.removeSuffix(", ")
+
+        suspend fun uploadItemImage(item: Item): String? {
+            val imageData = remoteServices.loadImageFromUrl(item.imageUri) ?: return null
+            return remoteServices.uploadItemImage(imageData)
+        }
     }

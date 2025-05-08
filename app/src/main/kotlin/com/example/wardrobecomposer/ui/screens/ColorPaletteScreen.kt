@@ -89,7 +89,8 @@ fun ColorPaletteScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(viewModel.paletteTypes) { (type, name) ->
+            items(viewModel.paletteTypes.entries.toList()) { entry ->
+                val (type, name) = entry
                 FilterChip(
                     selected = selectedPaletteType == type,
                     onClick = { viewModel.setPaletteType(type) },
