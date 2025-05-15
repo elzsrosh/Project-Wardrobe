@@ -51,4 +51,12 @@ fun colorForGroup(group: Item.Color.ColorGroup): Color =
         Item.Color.ColorGroup.СЕРЫЙ -> Color(0xFF9E9E9E)
         Item.Color.ColorGroup.ЧЁРНЫЙ -> Color(0xFF000000)
         Item.Color.ColorGroup.БЕЛЫЙ -> Color(0xFFFFFFFF)
+
+        // Новые группы
+        Item.Color.ColorGroup.ЛАВАНДА -> Color(0xFFCE93D8)
+        Item.Color.ColorGroup.МЯТА -> Color(0xFFAED581)
+        Item.Color.ColorGroup.АКВА -> Color(0xFF4DD0E1)
+        Item.Color.ColorGroup.ЛОСОСЕВЫЙ -> Color(0xFFFF8A65)
+        Item.Color.ColorGroup.БОРДОВЫЙ -> Color(0xFF880E4F)
+        Item.Color.ColorGroup.ПЕСОЧНЫЙ -> Color(0xFFFFF176)
     }

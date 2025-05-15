@@ -10,37 +10,46 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-private val LightColorScheme =
-    lightColorScheme(
-        primary = Color(0xFF2196F3),
-        secondary = Color(0xFF03A9F4),
-        tertiary = Color(0xFF4CAF50),
-        background = Color(0xFFFFFFFF),
-        surface = Color(0xFFFFFFFF),
-        onPrimary = Color.White,
-        onSecondary = Color.White,
-        onBackground = Color.Black,
-        onSurface = Color.Black,
-    )
+// Нежно-розовая палитра
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFFFFB6C1), // Нежно-розовый
+    secondary = Color(0xFFF48FB1),
+    tertiary = Color(0xFFE91E63),
+    background = Color(0xFFFFF0F4), // Светло-розовый фон
+    surface = Color.White,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onBackground = Color(0xFFC2185B), // Темно-розовый для текста
+    onSurface = Color.Black,
+)
 
-private val Typography =
-    Typography(
-        bodyLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp,
-            ),
+private val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        color = Color(0xFFC2185B) // Розовый заголовок
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        color = Color(0xFFD81B60)
     )
+)
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun WardrobeComposerTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,
-        content = content,
+        content = content
     )
 }

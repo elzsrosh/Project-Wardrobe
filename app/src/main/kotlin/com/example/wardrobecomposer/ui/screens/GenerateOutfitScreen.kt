@@ -1,5 +1,8 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package com.example.wardrobecomposer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,9 +12,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.ui.theme.WardrobeComposerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,10 +34,10 @@ fun GenerateOutfitScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Генерация образов") },
+                title = { Text("Генерация образов", color = Color(0xFFC2185B)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color(0xFFC2185B))
                     }
                 }
             )
@@ -42,9 +47,15 @@ fun GenerateOutfitScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp)
+                .background(Color(0xFFFFF0F4))
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top
         ) {
-            Text("Выберите вариант:", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Выберите вариант:",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFFC2185B)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -54,7 +65,7 @@ fun GenerateOutfitScreen(
                 FilterChip(
                     selected = selectedOption == 0,
                     onClick = { selectedOption = 0 },
-                    label = { Text("Из гардероба") }
+                    label = { Text("Из гардероба", color = Color(0xFFC2185B)) },
                 )
                 FilterChip(
                     selected = selectedOption == 1,
@@ -62,7 +73,7 @@ fun GenerateOutfitScreen(
                         selectedOption = 1
                         onAddNewItemClick()
                     },
-                    label = { Text("Новая вещь") }
+                    label = { Text("Новая вещь", color = Color(0xFFC2185B)) },
                 )
             }
 
@@ -70,7 +81,11 @@ fun GenerateOutfitScreen(
 
             when (selectedOption) {
                 0 -> {
-                    Text("Выберите базовую вещь:", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "Выберите базовую вещь:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color(0xFFC2185B)
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (isLoading) {
@@ -78,7 +93,7 @@ fun GenerateOutfitScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(color = Color(0xFFC2185B))
                         }
                     } else {
                         LazyColumn(
@@ -89,7 +104,8 @@ fun GenerateOutfitScreen(
                                 ItemCard(
                                     item = item,
                                     isSelected = selectedItem?.id == item.id,
-                                    onSelect = { selectedItem = item }
+                                    onSelect = { selectedItem = item },
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         }
@@ -104,9 +120,10 @@ fun GenerateOutfitScreen(
                     selectedItem?.let { onGenerateLooks(it) }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = (selectedOption == 0 && selectedItem != null)
+                enabled = (selectedOption == 0 && selectedItem != null),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text("Сгенерировать образы")
+                Text("Сгенерировать образы", color = Color(0xFFC2185B))
             }
         }
     }
@@ -123,13 +140,8 @@ fun ItemCard(
     Card(
         onClick = onSelect,
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface
-            }
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -142,9 +154,9 @@ fun ItemCard(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.name, style = MaterialTheme.typography.titleMedium)
-                Text("Категория: ${item.category.name}")
-                Text("Цвет: ${item.color.colorGroup.name}")
+                Text(item.name, style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+                Text("Категория: ${item.category.name}", color = Color(0xFFC2185B))
+                Text("Цвет: ${item.color.colorGroup.name}", color = Color(0xFFC2185B))
             }
         }
     }

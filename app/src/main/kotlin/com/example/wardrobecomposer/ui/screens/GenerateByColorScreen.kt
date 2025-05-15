@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.wardrobecomposer.model.item.Item
 import com.example.wardrobecomposer.utils.ColorUtils
+import com.example.wardrobecomposer.ui.theme.WardrobeComposerTheme
 
 @Composable
 fun GenerateByColorScreen(
@@ -25,73 +26,91 @@ fun GenerateByColorScreen(
     val colorPalette by viewModel.colorPalette.collectAsState()
     var isLoading by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-    ) {
-        Button(onClick = onBackClick) {
-            Text("Назад")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Выберите цветовую группу:", style = MaterialTheme.typography.titleLarge)
-
-        val groupedColors = Item.Color.ColorGroup.values().toList().chunked(5)
-
-        groupedColors.forEach { rowGroups ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                rowGroups.forEach { group ->
-                    ColorGroupButton(
-                        group = group,
-                        selected = selectedGroup == group,
-                        onClick = { selectedGroup = group },
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                selectedGroup?.let {
-                    isLoading = true
-                    viewModel.generateColorPalette(it.name)
-                    isLoading = false
-                }
-            },
-            enabled = selectedGroup != null && !isLoading,
-            modifier = Modifier.fillMaxWidth(),
+    WardrobeComposerTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFFFF0F4))
+                .padding(16.dp),
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
-            } else {
-                Text("Сгенерировать палитру")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (colorPalette.isNotEmpty()) {
-            Text("Гармоничная палитра:", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+            Button(
+                onClick = onBackClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
-                colorPalette.forEach { colorHex ->
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .background(ColorUtils.hexToColor(colorHex))
-                            .border(1.dp, Color.Gray, CircleShape)
+                Text("Назад", color = Color(0xFFC2185B))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Выберите цветовую группу:",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFFC2185B)
+            )
+
+            val groupedColors = Item.Color.ColorGroup.values().toList().chunked(5)
+
+            groupedColors.forEach { rowGroups ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    rowGroups.forEach { group ->
+                        ColorGroupButton(
+                            group = group,
+                            selected = selectedGroup == group,
+                            onClick = { selectedGroup = group },
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    selectedGroup?.let {
+                        isLoading = true
+                        viewModel.generateColorPalette(it.name)
+                        isLoading = false
+                    }
+                },
+                enabled = selectedGroup != null && !isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color(0xFFC2185B)
                     )
+                } else {
+                    Text("Сгенерировать палитру", color = Color(0xFFC2185B))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (colorPalette.isNotEmpty()) {
+                Text(
+                    "Гармоничная палитра:",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFFC2185B)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    colorPalette.forEach { colorHex ->
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .background(ColorUtils.hexToColor(colorHex))
+                                .border(1.dp, Color.Gray, CircleShape)
+                        )
+                    }
                 }
             }
         }

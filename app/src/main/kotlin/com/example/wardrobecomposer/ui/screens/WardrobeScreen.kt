@@ -1,5 +1,6 @@
 package com.example.wardrobecomposer.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.ui.theme.WardrobeComposerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,56 +32,62 @@ fun WardrobeScreen(
         viewModel.loadItems()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Мой гардероб") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+    WardrobeComposerTheme {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("МОЙ ГАРДЕРОБ", color = Color(0xFFC2185B)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = Color(0xFFC2185B))
+                        }
                     }
+                )
+            },
+            floatingActionButton = {
+                ExtendedFloatingActionButton(
+                    onClick = onAddItemClick,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "Добавить", tint = Color(0xFFC2185B)) },
+                    text = { Text("Добавить вещь", color = Color(0xFFC2185B)) },
+                    containerColor = Color.White
+                )
+            }
+        ) { padding ->
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(Color(0xFFFFF0F4)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFFC2185B))
                 }
-            )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onAddItemClick,
-                icon = { Icon(Icons.Default.Add, contentDescription = "Добавить") },
-                text = { Text("Добавить вещь") }
-            )
-        }
-    ) { padding ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (items.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Нет добавленных вещей")
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(items) { item ->
-                    ItemCard(
-                        item = item,
-                        onClick = { onItemClick(item) }
-                    )
+            } else if (items.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(Color(0xFFFFF0F4)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Нет добавленных вещей", color = Color(0xFFC2185B))
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(Color(0xFFFFF0F4)),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(items) { item ->
+                        ItemCard(
+                            item = item,
+                            onClick = { onItemClick(item) }
+                        )
+                    }
                 }
             }
         }
@@ -95,7 +104,8 @@ fun ItemCard(
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -108,10 +118,10 @@ fun ItemCard(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.name, style = MaterialTheme.typography.titleMedium)
-                Text("Категория: ${item.category.name}")
-                Text("Цвет: ${item.color.colorGroup.name}")
-                Text("Стиль: ${item.style.name}")
+                Text(item.name, style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+                Text("Категория: ${item.category.name}", color = Color(0xFFC2185B))
+                Text("Цвет: ${item.color.colorGroup.name}", color = Color(0xFFC2185B))
+                Text("Стиль: ${item.style.name}", color = Color(0xFFC2185B))
             }
         }
     }
