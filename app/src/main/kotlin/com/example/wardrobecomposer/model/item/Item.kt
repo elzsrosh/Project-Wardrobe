@@ -74,16 +74,15 @@ data class Item(
 
         companion object {
             fun fromHex(hex: String): Color {
-                val group =
-                    when {
-                        hex.matches(Regex("(?i)^(B0BEC5|9E9E9E|000000|FFFFFF).*")) ->
-                            ColorGroup.НЕЙТРАЛЬНЫЙ
-                        hex.matches(Regex("(?i)^(FFB300|F44336|FF9800|FFEB3B|8D6E63|795548).*")) ->
-                            ColorGroup.ТЁПЛЫЙ
-                        hex.matches(Regex("(?i)^(64B5F6|4CAF50|2196F3|9C27B0|E040FB|E91E63).*")) ->
-                            ColorGroup.ХОЛОДНЫЙ
-                        else -> ColorGroup.НЕЙТРАЛЬНЫЙ
-                    }
+                val group = when {
+                    hex.matches(Regex("(?i)^(B0BEC5|9E9E9E|000000|FFFFFF).*")) ->
+                        ColorGroup.НЕЙТРАЛЬНЫЙ
+                    hex.matches(Regex("(?i)^(FFB300|F44336|FF9800|FFEB3B|8D6E63|795548).*")) ->
+                        ColorGroup.ТЁПЛЫЙ
+                    hex.matches(Regex("(?i)^(64B5F6|4CAF50|2196F3|9C27B0|E040FB|E91E63).*")) ->
+                        ColorGroup.ХОЛОДНЫЙ
+                    else -> ColorGroup.НЕЙТРАЛЬНЫЙ
+                }
                 return Color("#$hex", group)
             }
         }
@@ -91,17 +90,17 @@ data class Item(
         val isWarm: Boolean
             get() =
                 colorGroup == ColorGroup.ТЁПЛЫЙ ||
-                    colorGroup == ColorGroup.ЗЕМЛЯНОЙ ||
-                    colorGroup == ColorGroup.КРАСНЫЙ ||
-                    colorGroup == ColorGroup.ОРАНЖЕВЫЙ ||
-                    colorGroup == ColorGroup.ЖЁЛТЫЙ
+                        colorGroup == ColorGroup.ЗЕМЛЯНОЙ ||
+                        colorGroup == ColorGroup.КРАСНЫЙ ||
+                        colorGroup == ColorGroup.ОРАНЖЕВЫЙ ||
+                        colorGroup == ColorGroup.ЖЁЛТЫЙ
 
         val isCool: Boolean
             get() =
                 colorGroup == ColorGroup.ХОЛОДНЫЙ ||
-                    colorGroup == ColorGroup.ЯРКИЙ ||
-                    colorGroup == ColorGroup.СИНИЙ ||
-                    colorGroup == ColorGroup.ФИОЛЕТОВЫЙ ||
-                    colorGroup == ColorGroup.ЗЕЛЁНЫЙ
+                        colorGroup == ColorGroup.ЯРКИЙ ||
+                        colorGroup == ColorGroup.СИНИЙ ||
+                        colorGroup == ColorGroup.ФИОЛЕТОВЫЙ ||
+                        colorGroup == ColorGroup.ЗЕЛЁНЫЙ
     }
 }

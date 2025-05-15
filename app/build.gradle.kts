@@ -58,6 +58,9 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     // UI Components
     implementation("com.github.skydoves:colorpicker-compose:1.0.4")
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))

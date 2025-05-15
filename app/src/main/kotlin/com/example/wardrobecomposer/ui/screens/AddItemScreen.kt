@@ -1,5 +1,4 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package com.example.wardrobecomposer.ui.screens
 
 import android.net.Uri
@@ -33,20 +32,21 @@ fun AddItemScreen(
     var selectedColorGroup by remember { mutableStateOf<Item.Color.ColorGroup?>(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var itemImageUrl by remember { mutableStateOf("") }
-
     val context = LocalContext.current
+
     val galleryLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent(),
             onResult = { uri -> imageUri = uri },
         )
 
+    // Добавляем прокрутку к Column
     Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState()) // 🔥 Прокрутка здесь
+            .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
     ) {
@@ -56,21 +56,16 @@ fun AddItemScreen(
         ) {
             Text("НАЗАД")
         }
-
         Spacer(modifier = Modifier.height(20.dp))
         Text("ДОБАВИТЬ НОВУЮ ВЕЩЬ", style = MaterialTheme.typography.headlineMedium)
-
         Spacer(modifier = Modifier.height(20.dp))
-
         OutlinedTextField(
             value = itemName,
             onValueChange = { itemName = it },
             label = { Text("НАЗВАНИЕ ВЕЩИ") },
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("URL изображения:")
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -79,12 +74,9 @@ fun AddItemScreen(
             label = { Text("Введите URL изображения") },
             modifier = Modifier.fillMaxWidth(),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("Изображение:", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
-
         if (imageUri != null) {
             AsyncImage(
                 model = imageUri,
@@ -102,9 +94,7 @@ fun AddItemScreen(
                 Text("Выбрать изображение")
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("КАТЕГОРИЯ:", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier =
@@ -121,7 +111,6 @@ fun AddItemScreen(
                 )
             }
         }
-
         Row(
             modifier =
                 Modifier
@@ -137,9 +126,7 @@ fun AddItemScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier =
@@ -156,7 +143,6 @@ fun AddItemScreen(
                 )
             }
         }
-
         Row(
             modifier =
                 Modifier
@@ -172,9 +158,7 @@ fun AddItemScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier =
@@ -197,7 +181,6 @@ fun AddItemScreen(
                 )
             }
         }
-
         Row(
             modifier =
                 Modifier
@@ -219,9 +202,7 @@ fun AddItemScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier =
@@ -238,7 +219,6 @@ fun AddItemScreen(
                 )
             }
         }
-
         Row(
             modifier =
                 Modifier
@@ -254,7 +234,6 @@ fun AddItemScreen(
                 )
             }
         }
-
         Row(
             modifier =
                 Modifier
@@ -270,9 +249,7 @@ fun AddItemScreen(
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(24.dp))
-
         Button(
             onClick = {
                 if (itemName.isNotBlank() &&
@@ -301,10 +278,10 @@ fun AddItemScreen(
             },
             enabled =
                 itemName.isNotBlank() &&
-                    selectedCategory != null &&
-                    selectedMaterial != null &&
-                    selectedStyles.isNotEmpty() &&
-                    selectedColorGroup != null,
+                        selectedCategory != null &&
+                        selectedMaterial != null &&
+                        selectedStyles.isNotEmpty() &&
+                        selectedColorGroup != null,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
             modifier =
                 Modifier

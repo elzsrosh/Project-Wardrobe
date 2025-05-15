@@ -1,234 +1,127 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package com.example.wardrobecomposer.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.wardrobecomposer.utils.ColorPickerDialog
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Scaffold
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wardrobecomposer.utils.ColorUtils
+import androidx.compose.foundation.background
 
-@Suppress("ktlint:standard:function-naming")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPaletteScreen(
-    viewModel: WardrobeViewModel,
+    viewModel: WardrobeViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
 ) {
-    val colorPalette by viewModel.colorPalette.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val selectedPaletteType by viewModel.selectedPaletteType.collectAsState()
+    // Явное указание типов для collectAsState()
+    val colorPalette by viewModel.colorPalette.collectAsState(emptyList())
+    val isLoading by viewModel.isLoading.collectAsState(false)
+    val errorMessage by viewModel.errorMessage.collectAsState(null)
+    val selectedPaletteType by viewModel.selectedPaletteType.collectAsState("")
 
-    var showColorPicker by remember { mutableStateOf(false) }
-    var selectedColor by remember { mutableStateOf(Color(0xFF2196F3)) }
-
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Назад",
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Генератор цветовой палитры",
-                style = MaterialTheme.typography.titleLarge,
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Цветовая палитра") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    }
+                }
             )
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { showColorPicker = true },
-            modifier = Modifier.fillMaxWidth(),
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
         ) {
-            Text("Выбрать базовый цвет")
-        }
+            // Palette type selection
+            Text("Тип палитры:", style = MaterialTheme.typography.titleMedium)
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
-            modifier =
-                Modifier
-                    .size(100.dp)
-                    .background(selectedColor)
-                    .border(1.dp, Color.Black),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Тип палитры:",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.Start),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(viewModel.paletteTypes.entries.toList()) { entry ->
-                val (type, name) = entry
-                FilterChip(
-                    selected = selectedPaletteType == type,
-                    onClick = { viewModel.setPaletteType(type) },
-                    label = { Text(name) },
-                )
+            Row(modifier = Modifier.padding(vertical = 8.dp)) {
+                viewModel.paletteTypes.forEach { type ->
+                    TextButton(
+                        onClick = { viewModel.setPaletteType(type) },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = if (selectedPaletteType == type) MaterialTheme.colorScheme.primary else Color.Unspecified
+                        )
+                    ) {
+                        Text(type)
+                    }
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                val hexColor = String.format("#%06X", (0xFFFFFF and selectedColor.value.toInt()))
-                viewModel.generateColorPalette(hexColor)
-            },
-            enabled = !isLoading,
-            modifier = Modifier.fillMaxWidth(),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            } else {
+            // Generate palette button
+            Button(
+                onClick = { viewModel.generateColorPalette("#B0BEC5") },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
                 Text("Сгенерировать палитру")
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        errorMessage?.let { message ->
-            Text(
-                text = message,
-                color = MaterialTheme.colorScheme.error,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        when {
-            isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+            if (isLoading) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator()
                 }
             }
-            colorPalette.isNotEmpty() -> {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Результат:",
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ColorPaletteView(palette = colorPalette)
-                }
-            }
-            else -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Палитра не сгенерирована",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-        }
-    }
 
-    if (showColorPicker) {
-        ColorPickerDialog(
-            initialColor = selectedColor,
-            onColorSelected = { color ->
-                selectedColor = color
-                showColorPicker = false
-            },
-            onDismiss = { showColorPicker = false },
-        )
-    }
-}
-
-@Suppress("ktlint:standard:function-naming")
-@Composable
-fun ColorPaletteView(palette: List<String>) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            palette.forEach { colorHex ->
-                ColorBoxItem(colorHex = colorHex)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            palette.forEach { colorHex ->
+            if (errorMessage != null) {
                 Text(
-                    text = colorHex,
-                    style = MaterialTheme.typography.labelSmall,
+                    text = errorMessage ?: "Ошибка",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
-        }
-    }
-}
 
-@Suppress("ktlint:standard:function-naming")
-@Composable
-fun ColorBoxItem(
-    colorHex: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(4.dp),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(80.dp)
-                    .background(Color(android.graphics.Color.parseColor(colorHex)))
-                    .border(1.dp, Color.Black),
-        )
+            if (colorPalette.isNotEmpty()) {
+                Text(
+                    text = "Сгенерированная палитра:",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
+                Column(modifier = Modifier.padding(top = 8.dp)) {
+                    colorPalette.forEach { colorHex ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(Color(android.graphics.Color.parseColor(colorHex)))
+                            )
+                            Text(
+                                text = " $colorHex",
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }

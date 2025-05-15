@@ -1,6 +1,7 @@
 package com.example.wardrobecomposer.di
 
 import com.example.wardrobecomposer.api.ColorApiService
+import com.example.wardrobecomposer.api.HuggingFaceApiService
 import com.example.wardrobecomposer.api.ImageUploadService
 import dagger.Module
 import dagger.Provides
@@ -21,21 +22,20 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient
-            .Builder()
+        OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
-                },
-            ).build()
+                }
+            )
+            .build()
 
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit
-            .Builder()
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
@@ -43,9 +43,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideColorApiService(retrofit: Retrofit): ColorApiService = retrofit.create(ColorApiService::class.java)
+    fun provideColorApiService(retrofit: Retrofit): ColorApiService =
+        retrofit.create(ColorApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideImageUploadService(retrofit: Retrofit): ImageUploadService = retrofit.create(ImageUploadService::class.java)
+    fun provideImageUploadService(retrofit: Retrofit): ImageUploadService =
+        retrofit.create(ImageUploadService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHuggingFaceService(client: OkHttpClient): HuggingFaceApiService =
+        HuggingFaceApiService(client)
 }

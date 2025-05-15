@@ -3,111 +3,132 @@ package com.example.wardrobecomposer.ui.screens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wardrobecomposer.model.item.Item
-import com.example.wardrobecomposer.model.item.Item.Color.ColorGroup
 import com.example.wardrobecomposer.model.item.Look
-import com.example.wardrobecomposer.repository.RemoteServices
 import com.example.wardrobecomposer.repository.WardrobeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WardrobeViewModel
-    @Inject
-    constructor(
-        private val repository: WardrobeRepository,
-        private val remoteServices: RemoteServices,
-    ) : ViewModel() {
-        // Для работы с гардеробом
-        private val _items = MutableStateFlow<List<Item>>(emptyList())
-        val items: StateFlow<List<Item>> = _items.asStateFlow()
+class WardrobeViewModel @Inject constructor(
+    private val repository: WardrobeRepository
+) : ViewModel() {
+    // --- Основные потоки данных ---
+    private val _items = MutableStateFlow<List<Item>>(emptyList())
+    val items: StateFlow<List<Item>> = _items
 
-        // Для генерации образов
-        private val _looks = MutableStateFlow<List<Look>>(emptyList())
-        val looks: StateFlow<List<Look>> = _looks.asStateFlow()
+    private val _looks = MutableStateFlow<List<Look>>(emptyList())
+    val looks: StateFlow<List<Look>> = _looks
 
-        // Для цветовой палитры
-        private val _colorPalette = MutableStateFlow<List<String>>(emptyList())
-        val colorPalette: StateFlow<List<String>> = _colorPalette.asStateFlow()
+    private val _colorPalette = MutableStateFlow<List<String>>(emptyList())
+    val colorPalette: StateFlow<List<String>> = _colorPalette
 
-        private val _isLoading = MutableStateFlow(false)
-        val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-        private val _errorMessage = MutableStateFlow<String?>(null)
-        val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+    private val _styleAdvice = MutableStateFlow("Загрузка...")
+    val styleAdvice: StateFlow<String> = _styleAdvice
 
-        private val _selectedPaletteType = MutableStateFlow<String?>(null)
-        val selectedPaletteType: StateFlow<String?> = _selectedPaletteType.asStateFlow()
+    // --- Новые поля для дополнительного функционала ---
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
-        val paletteTypes =
-            mapOf(
-                "default" to "По умолчанию",
-                "analogous" to "Аналоговая",
-                "complementary" to "Контрастная",
-                "monochrome" to "Монохром",
-            )
+    private val _selectedPaletteType = MutableStateFlow("")
+    val selectedPaletteType: StateFlow<String> = _selectedPaletteType
 
-        init {
-            loadItems()
-        }
+    val paletteTypes = listOf("complementary", "analogous", "monochromatic")
 
-        private fun loadItems() {
-            viewModelScope.launch {
-                _items.value = repository.getAllItems()
-            }
-        }
+    // --- Методы для работы с цветовой палитрой ---
+    fun setPaletteType(type: String) {
+        _selectedPaletteType.value = type
+    }
 
-        fun addItem(item: Item) {
-            viewModelScope.launch {
-                repository.addItem(item)
-                _items.value = _items.value + item
-            }
-        }
-
-        fun generateLooksByColor(colorGroup: ColorGroup) {
-            viewModelScope.launch {
-                _looks.value = repository.generateLooks(colorScheme = createColorScheme(colorGroup))
-            }
-        }
-
-        fun generateLooksByItem(item: Item) {
-            viewModelScope.launch {
-                _looks.value = repository.generateLooks(baseItem = item)
-            }
-        }
-
-        private fun createColorScheme(colorGroup: ColorGroup): Look.ColorScheme =
-            Look.ColorScheme(
-                primaryColor = Item.Color("#000000", colorGroup),
-                secondaryColors = emptyList(),
-                isComplementary = false,
-                isAnalogous = false,
-                isMonochromatic = false,
-            )
-
-        // Генерация цветовой палитры
-        fun generateColorPalette(
-            baseColorHex: String,
-            paletteType: String? = null,
-        ) {
-            viewModelScope.launch {
-                _isLoading.value = true
+    fun generateColorPalette(baseColor: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _colorPalette.value = repository.generateColorPalette(baseColor)
                 _errorMessage.value = null
-                try {
-                    val colors = remoteServices.generateColorPalette(baseColorHex, paletteType)
-                    _colorPalette.value = colors
-                } catch (e: Exception) {
-                    _errorMessage.value = "Ошибка при генерации палитры"
-                } finally {
-                    _isLoading.value = false
-                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка генерации палитры: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
-        }
-
-        fun setPaletteType(type: String?) {
-            _selectedPaletteType.value = type
         }
     }
+
+    // --- Методы для работы с советами по стилю ---
+    fun getStyleAdvice(itemName: String) {
+        viewModelScope.launch {
+            try {
+                val advice = repository.getStyleAdvice(itemName)
+                _styleAdvice.value = advice
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _styleAdvice.value = "Ошибка загрузки совета"
+                _errorMessage.value = "Не удалось получить совет: ${e.message}"
+            }
+        }
+    }
+
+    // --- Методы для работы с предметами гардероба ---
+    fun addItem(item: Item) {
+        viewModelScope.launch {
+            try {
+                repository.addItem(item)
+                _items.value = repository.getAllItems()
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка добавления предмета: ${e.message}"
+            }
+        }
+    }
+
+    fun refreshItems() {
+        viewModelScope.launch {
+            try {
+                _items.value = repository.getAllItems()
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка обновления списка: ${e.message}"
+            }
+        }
+    }
+
+    // --- Методы для генерации образов ---
+    fun generateLooksFromItem(item: Item) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _looks.value = repository.generateLooksFromItem(item)
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка генерации образа: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun generateLooksByColor(colorGroup: Item.Color.ColorGroup) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _looks.value = repository.generateLooksByColor(colorGroup)
+                _errorMessage.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Ошибка генерации по цвету: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    // --- Инициализация данных ---
+    init {
+        viewModelScope.launch {
+            _items.value = repository.getAllItems()
+        }
+    }
+}

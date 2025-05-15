@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package com.example.wardrobecomposer.ui
 
 import android.Manifest
@@ -31,16 +29,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val permissions =
-        arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA,
-        )
+    private val permissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA,
+    )
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions(),
-        ) { /* Можно обработать результаты, если нужно */ }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { /* Можно обработать результаты, если нужно */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +44,7 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (permissions.any {
                     ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-                }
-            ) {
+                }) {
                 requestPermissionLauncher.launch(permissions)
             }
         }
@@ -67,7 +62,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun WardrobeApp() {
     val navController = rememberNavController()
@@ -124,7 +118,7 @@ fun WardrobeApp() {
                 items = items,
                 onBackClick = { navController.popBackStack() },
                 onGenerate = { item ->
-                    viewModel.generateLooksByItem(item)
+                    viewModel.generateLooksFromItem(item)
                     navController.navigate("looks_list")
                 },
             )
@@ -147,9 +141,10 @@ fun WardrobeApp() {
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
             val item = items.find { it.id == itemId } ?: return@composable
 
-            itemDetailsScreen(
+            ItemDetailsScreen(
                 item = item,
                 onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
 
@@ -163,6 +158,19 @@ fun WardrobeApp() {
             LookDetailScreen(
                 look = look,
                 onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable(
+            route = "style_advice/{itemName}",
+            arguments = listOf(navArgument("itemName") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val itemName = backStackEntry.arguments?.getString("itemName") ?: return@composable
+
+            StyleAdviceScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() },
+                itemName = itemName
             )
         }
     }
