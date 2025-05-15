@@ -14,7 +14,7 @@ class HuggingFaceApiService @Inject constructor(
     private val client: OkHttpClient
 ) {
     private val apiUrl = "https://api-inference.huggingface.co/models/gpt2"
-    private val apiKey = "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"
+    private val apiKey = "my_token"
 
     suspend fun getStyleAdvice(item: String): String = withContext(Dispatchers.IO) {
         val prompt = "С чем можно сочетать $item? Ответь кратко и по делу."
