@@ -6,7 +6,10 @@ import com.example.wardrobecomposer.model.item.Item
 import com.example.wardrobecomposer.model.item.Look
 import com.example.wardrobecomposer.repository.WardrobeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,97 +17,71 @@ import javax.inject.Inject
 class WardrobeViewModel @Inject constructor(
     private val repository: WardrobeRepository
 ) : ViewModel() {
-    // --- Основные потоки данных ---
     private val _items = MutableStateFlow<List<Item>>(emptyList())
-    val items: StateFlow<List<Item>> = _items
+    val items: StateFlow<List<Item>> = _items.asStateFlow()
 
     private val _looks = MutableStateFlow<List<Look>>(emptyList())
-    val looks: StateFlow<List<Look>> = _looks
+    val looks: StateFlow<List<Look>> = _looks.asStateFlow()
 
     private val _colorPalette = MutableStateFlow<List<String>>(emptyList())
-    val colorPalette: StateFlow<List<String>> = _colorPalette
+    val colorPalette: StateFlow<List<String>> = _colorPalette.asStateFlow()
+
+    private val _styleAdvice = MutableStateFlow("")
+    val styleAdvice: StateFlow<String> = _styleAdvice.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _styleAdvice = MutableStateFlow("Загрузка...")
-    val styleAdvice: StateFlow<String> = _styleAdvice
+    private val _selectedItem = MutableStateFlow<Item?>(null)
+    val selectedItem: StateFlow<Item?> = _selectedItem.asStateFlow()
 
-    // --- Новые поля для дополнительного функционала ---
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
+    private val _selectedLook = MutableStateFlow<Look?>(null)
+    val selectedLook: StateFlow<Look?> = _selectedLook.asStateFlow()
 
-    private val _selectedPaletteType = MutableStateFlow("")
-    val selectedPaletteType: StateFlow<String> = _selectedPaletteType
-
-    val paletteTypes = listOf("complementary", "analogous", "monochromatic")
-
-    // --- Методы для работы с цветовой палитрой ---
-    fun setPaletteType(type: String) {
-        _selectedPaletteType.value = type
+    init {
+        loadItems()
     }
 
-    fun generateColorPalette(baseColor: String) {
+    fun loadItems() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _colorPalette.value = repository.generateColorPalette(baseColor)
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _errorMessage.value = "Ошибка генерации палитры: ${e.message}"
+                _items.value = repository.getAllItems()
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    // --- Методы для работы с советами по стилю ---
-    fun getStyleAdvice(itemName: String) {
-        viewModelScope.launch {
-            try {
-                val advice = repository.getStyleAdvice(itemName)
-                _styleAdvice.value = advice
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _styleAdvice.value = "Ошибка загрузки совета"
-                _errorMessage.value = "Не удалось получить совет: ${e.message}"
-            }
-        }
-    }
-
-    // --- Методы для работы с предметами гардероба ---
     fun addItem(item: Item) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 repository.addItem(item)
-                _items.value = repository.getAllItems()
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _errorMessage.value = "Ошибка добавления предмета: ${e.message}"
+                _items.update { repository.getAllItems() }
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-    fun refreshItems() {
+    fun selectItem(itemId: String) {
         viewModelScope.launch {
-            try {
-                _items.value = repository.getAllItems()
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _errorMessage.value = "Ошибка обновления списка: ${e.message}"
-            }
+            _selectedItem.value = _items.value.find { it.id == itemId }
         }
     }
 
-    // --- Методы для генерации образов ---
+    fun selectLook(lookId: String) {
+        viewModelScope.launch {
+            _selectedLook.value = _looks.value.find { it.id == lookId }
+        }
+    }
+
     fun generateLooksFromItem(item: Item) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 _looks.value = repository.generateLooksFromItem(item)
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _errorMessage.value = "Ошибка генерации образа: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -116,19 +93,31 @@ class WardrobeViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 _looks.value = repository.generateLooksByColor(colorGroup)
-                _errorMessage.value = null
-            } catch (e: Exception) {
-                _errorMessage.value = "Ошибка генерации по цвету: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    // --- Инициализация данных ---
-    init {
+    fun generateColorPalette(baseColor: String, paletteType: String? = null) {
         viewModelScope.launch {
-            _items.value = repository.getAllItems()
+            _isLoading.value = true
+            try {
+                _colorPalette.value = repository.generateColorPalette(baseColor, paletteType)
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun getStyleAdvice(itemName: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                _styleAdvice.value = repository.getStyleAdvice(itemName)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

@@ -40,12 +40,11 @@ fun AddItemScreen(
             onResult = { uri -> imageUri = uri },
         )
 
-    // Добавляем прокрутку к Column
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .verticalScroll(rememberScrollState()) // 🔥 Прокрутка здесь
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,

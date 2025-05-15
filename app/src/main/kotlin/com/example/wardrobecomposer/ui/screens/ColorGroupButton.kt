@@ -33,7 +33,7 @@ fun ColorGroupButton(
                 .border(
                     width = if (selected) 2.dp else 1.dp,
                     color = if (selected) ColorUtils.colorForGroup(Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ)
-                    else Color(0xFF808080), // Используем HEX-значение вместо Color.Gray
+                    else Color(0xFF808080),
                     shape = CircleShape
                 )
                 .clickable(onClick = onClick)

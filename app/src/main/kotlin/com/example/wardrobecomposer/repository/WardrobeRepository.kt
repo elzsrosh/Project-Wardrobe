@@ -39,7 +39,7 @@ class WardrobeRepository @Inject constructor(
     }
 
     // --- Метод для генерации палитры цветов ---
-    suspend fun generateColorPalette(baseColor: String): List<String> {
+    suspend fun generateColorPalette(baseColor: String, paletteType: String?): List<String> {
         return remoteServices.generateColorPalette(baseColor = baseColor)
     }
 
