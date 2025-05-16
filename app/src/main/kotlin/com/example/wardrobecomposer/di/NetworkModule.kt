@@ -1,6 +1,5 @@
 package com.example.wardrobecomposer.di
 
-import com.example.wardrobecomposer.api.ColorApiService
 import com.example.wardrobecomposer.api.TheColorApiService
 import dagger.Module
 import dagger.Provides
@@ -17,8 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL_COLOR_API = "http://colormind.io/"
-    private const val BASE_URL_THE_COLOR_API = "https://www.thecolorapi.com/"
+    private const val BASE_URL_THE_COLOR_API = "https://www.thecolorapi.com/ "
 
     @Provides
     @Singleton
@@ -32,16 +30,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("colorApiRetrofit")
-    fun provideColorApiRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(BASE_URL_COLOR_API)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    @Provides
-    @Singleton
     @Named("theColorApiRetrofit")
     fun provideTheColorApiRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
@@ -49,11 +37,6 @@ object NetworkModule {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
-    @Provides
-    @Singleton
-    fun provideColorApiService(@Named("colorApiRetrofit") retrofit: Retrofit): ColorApiService =
-        retrofit.create(ColorApiService::class.java)
 
     @Provides
     @Singleton

@@ -64,6 +64,7 @@ fun ItemDetailsScreen(
                     return@Scaffold
                 }
 
+                // Отображение изображения и деталей вещи
                 if (item?.imageUri?.isNotEmpty() == true) {
                     AsyncImage(
                         model = item?.imageUri,
@@ -89,10 +90,8 @@ fun ItemDetailsScreen(
                     Button(
                         onClick = {
                             item?.let {
-                                val rgbList = ColorUtils.hexToRgb(it.color.hex)
-
-                                viewModel.generateColorPaletteFromColorApi(rgbList)
-
+                                val hex = it.color.hex.removePrefix("#")
+                                viewModel.generateColorPalette(hex, "analogic")
                                 viewModel.getStyleAdvice(it.name)
                             }
                         },
@@ -124,6 +123,7 @@ fun ItemDetailsScreen(
                     )
                 }
 
+                // Отображение палитры
                 if (colorPalette.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Сгенерированная палитра:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
@@ -141,6 +141,7 @@ fun ItemDetailsScreen(
                     }
                 }
 
+                // Отображение совета по стилю
                 if (styleAdvice.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Совет по стилю:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))

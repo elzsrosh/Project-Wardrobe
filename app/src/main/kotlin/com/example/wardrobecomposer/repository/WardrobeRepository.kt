@@ -1,10 +1,8 @@
 package com.example.wardrobecomposer.repository
 
-import com.example.wardrobecomposer.api.ColorApiService
 import com.example.wardrobecomposer.api.TheColorApiService
 import com.example.wardrobecomposer.api.HuggingFaceApiService
 import com.example.wardrobecomposer.model.item.Item
-import com.example.wardrobecomposer.repository.RemoteServices
 import com.example.wardrobecomposer.model.item.Look
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,14 +40,9 @@ class WardrobeRepository @Inject constructor(
             }
     }
 
-    // Генерация палитры через TheColorApiService (генератор)
+    // Генерация палитры через TheColorApiService
     suspend fun generateColorPalette(hex: String, mode: String): List<String> {
         return remoteServices.getColorScheme(hex, mode)
-    }
-
-    // Получение палитры деталей через ColorApiService (детали)
-    suspend fun generateColorPaletteDetails(input: List<Int>): List<String> {
-        return remoteServices.generateColorPalette(input)
     }
 
     suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> {

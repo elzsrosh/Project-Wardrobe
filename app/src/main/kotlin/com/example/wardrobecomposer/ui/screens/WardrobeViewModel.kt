@@ -116,19 +116,6 @@ class WardrobeViewModel @Inject constructor(
         }
     }
 
-    // Палитра деталей (используется RGB список)
-    fun generateColorPaletteFromColorApi(rgbInput: List<Int>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.emit(true)
-            try {
-                val palette = repository.generateColorPaletteDetails(rgbInput)
-                _colorPalette.emit(palette)
-            } finally {
-                _isLoading.emit(false)
-            }
-        }
-    }
-
     fun getStyleAdvice(itemName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.emit(true)
