@@ -30,7 +30,7 @@ class TogetherAiApiService @Inject constructor(
             append("- Цвет: $color\n")
             append("- Стиль: $style\n")
             append("Приведи краткие примеры образов и ситуаций использования. ")
-            append("Все в одну строку. Ответ полностью на русском языке.")
+            append("Все в одну строку! Никаких переносов на новую! Ответ полностью на русском языке.")
         }
 
         val message = JSONObject().apply {

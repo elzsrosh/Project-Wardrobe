@@ -312,14 +312,23 @@ fun AddItemScreen(
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
-                    if (itemName.isNotBlank() && selectedCategory != null && selectedMaterial != null && selectedStyles.isNotEmpty() && selectedColorGroup != null) {
+                    if (
+                        itemName.isNotBlank() &&
+                        selectedCategory != null &&
+                        selectedMaterial != null &&
+                        selectedStyles.isNotEmpty() &&
+                        selectedColorGroup != null
+                    ) {
                         val newItem = Item(
                             id = UUID.randomUUID().toString(),
                             name = itemName,
                             category = selectedCategory!!,
                             material = selectedMaterial!!,
                             style = selectedStyles.first(),
-                            color = Item.Color(hex = "#FFB6C1", colorGroup = selectedColorGroup!!),
+                            color = Item.Color(
+                                hex = ColorUtils.colorToHex(ColorUtils.colorForGroup(selectedColorGroup!!)),
+                                colorGroup = selectedColorGroup!!
+                            ),
                             imageUri = imageUri?.toString() ?: itemImageUrl
                         )
                         onItemAdded(newItem)
@@ -338,6 +347,7 @@ fun AddItemScreen(
             ) {
                 Text("СОХРАНИТЬ", color = Color(0xFFC2185B))
             }
+
         }
     }
 }

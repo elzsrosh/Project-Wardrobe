@@ -64,7 +64,7 @@ fun ItemDetailsScreen(
                     return@Scaffold
                 }
 
-                // Отображение изображения и деталей вещи
+                // Отображение изображения
                 if (item?.imageUri?.isNotEmpty() == true) {
                     AsyncImage(
                         model = item?.imageUri,
@@ -76,13 +76,27 @@ fun ItemDetailsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
+                // Основные характеристики
                 Text("Категория: ${item?.category?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
                 Text("Материал: ${item?.material?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
                 Text("Стиль: ${item?.style?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
                 Text("Цвет: ${item?.color?.hex} (${item?.color?.colorGroup?.name})", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 🔥 Исправленное отображение цвета
+                val itemColor = item?.color?.hex ?: "#FFB6C1"
+                val displayColor = Color(android.graphics.Color.parseColor(itemColor))
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(displayColor)
+                )
+
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Кнопки
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -94,10 +108,10 @@ fun ItemDetailsScreen(
                                 viewModel.generateColorPalette(hex, "analogic")
                                 viewModel.getStyleAdvice(
                                     itemName = it.name,
-                                    type = it.category?.name,
-                                    material = it.material?.name,
-                                    style = it.style?.name,
-                                    color = it.color?.hex
+                                    type = it.category.name,
+                                    material = it.material.name,
+                                    style = it.style.name,
+                                    color = it.color.hex
                                 )
                             }
                         },
@@ -129,7 +143,7 @@ fun ItemDetailsScreen(
                     )
                 }
 
-                // Отображение палитры
+                // Палитра
                 if (colorPalette.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Сгенерированная палитра:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
@@ -147,7 +161,7 @@ fun ItemDetailsScreen(
                     }
                 }
 
-                // Отображение совета по стилю
+                // Стилевой совет
                 if (styleAdvice.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Совет по стилю:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
