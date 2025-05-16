@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.wardrobecomposer.model.item.Item
-import com.example.wardrobecomposer.ui.theme.WardrobeComposerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,6 +1,5 @@
 package com.example.wardrobecomposer.model.item
 
-import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
 
 @Serializable

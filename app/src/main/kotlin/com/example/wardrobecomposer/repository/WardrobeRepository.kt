@@ -21,7 +21,6 @@ class WardrobeRepository @Inject constructor(
         _items.update { current -> current + item }
     }
 
-    // --- Методы для генерации образов ---
     suspend fun generateLooksFromItem(baseItem: Item): List<Look> {
         return _items.value
             .filter { it.id != baseItem.id && isItemsCompatible(baseItem, it) }
@@ -38,12 +37,10 @@ class WardrobeRepository @Inject constructor(
             }
     }
 
-    // --- Метод для генерации палитры цветов ---
     suspend fun generateColorPalette(baseColor: String, paletteType: String?): List<String> {
         return remoteServices.generateColorPalette(baseColor = baseColor)
     }
 
-    // --- Существующие методы ---
     suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> {
         return _items.value
             .filter { it.id != baseItem.id }
@@ -61,7 +58,6 @@ class WardrobeRepository @Inject constructor(
         return huggingFaceApi.getStyleAdvice(itemName)
     }
 
-    // --- Вспомогательная логика ---
     private fun isItemsCompatible(item1: Item, item2: Item): Boolean {
         val colorCompatible = when {
             item1.color.colorGroup == item2.color.colorGroup -> true

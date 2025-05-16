@@ -10,16 +10,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Нежно-розовая палитра
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFFFB6C1), // Нежно-розовый
+    primary = Color(0xFFFFB6C1),
     secondary = Color(0xFFF48FB1),
     tertiary = Color(0xFFE91E63),
-    background = Color(0xFFFFF0F4), // Светло-розовый фон
+    background = Color(0xFFFFF0F4),
     surface = Color.White,
     onPrimary = Color.White,
     onSecondary = Color.White,
-    onBackground = Color(0xFFC2185B), // Темно-розовый для текста
+    onBackground = Color(0xFFC2185B),
     onSurface = Color.Black,
 )
 
@@ -35,7 +34,7 @@ private val Typography = Typography(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        color = Color(0xFFC2185B) // Розовый заголовок
+        color = Color(0xFFC2185B)
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,

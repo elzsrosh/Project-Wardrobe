@@ -1,7 +1,5 @@
 package com.example.wardrobecomposer.model.item
 
-import androidx.compose.ui.graphics.Color
-
 data class Look(
     val id: String,
     val name: String,

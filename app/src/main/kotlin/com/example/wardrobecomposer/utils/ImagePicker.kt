@@ -20,8 +20,6 @@ object ImagePicker {
     fun rememberImagePicker(onImageSelected: (Uri) -> Unit): Pair<Intent, () -> Unit> {
         val context = LocalContext.current
         val activity = context as Activity
-
-        // Создаем временный файл для хранения фото
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_${timeStamp}_"
         val storageDir = context.getExternalFilesDir("images")
@@ -33,17 +31,14 @@ object ImagePicker {
                 imageFile,
             )
 
-        // Intent для выбора фото из галереи
         val galleryIntent =
             Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 .apply { type = "image/*" }
 
-        // Intent для съемки фото
         val cameraIntent =
             Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 .apply { putExtra(MediaStore.EXTRA_OUTPUT, imageUri) }
 
-        // Intent для выбора способа загрузки
         val chooserIntent =
             Intent
                 .createChooser(galleryIntent, "Выберите изображение")
