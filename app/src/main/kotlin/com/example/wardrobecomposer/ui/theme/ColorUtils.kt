@@ -77,6 +77,19 @@ object ColorUtils {
         return "#$r$g$b"
     }
 
+    fun rgbToHex(r: Int, g: Int, b: Int): String {
+        return String.format("#%02X%02X%02X", r, g, b)
+    }
+
+    fun hexToRgb(hex: String): List<Int> {
+        val color = android.graphics.Color.parseColor(hex)
+        return listOf(
+            android.graphics.Color.red(color),
+            android.graphics.Color.green(color),
+            android.graphics.Color.blue(color)
+        )
+    }
+
     fun getColorNameFromColor(color: Color): String {
         val hex = colorToHex(color).uppercase()
         return colorNameMap[hex] ?: "Неизвестный"

@@ -6,7 +6,7 @@ import retrofit2.http.POST
 interface ColorApiService {
     @POST("api/")
     suspend fun generateColorPalette(
-        @Body request: ColorRequest,
+        @Body request: ColorRequest
     ): ColorPaletteResponse
 
     data class ColorRequest(
@@ -16,6 +16,6 @@ interface ColorApiService {
     )
 
     data class ColorPaletteResponse(
-        val result: List<List<Int>>,
+        val result: List<List<Int>>
     )
 }

@@ -1,9 +1,14 @@
 package com.example.wardrobecomposer.repository
 
+import com.example.wardrobecomposer.api.ColorApiService
+import com.example.wardrobecomposer.api.TheColorApiService
 import com.example.wardrobecomposer.api.HuggingFaceApiService
 import com.example.wardrobecomposer.model.item.Item
+import com.example.wardrobecomposer.repository.RemoteServices
 import com.example.wardrobecomposer.model.item.Look
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +18,7 @@ class WardrobeRepository @Inject constructor(
     private val huggingFaceApi: HuggingFaceApiService
 ) {
     private val _items = MutableStateFlow<List<Item>>(emptyList())
-    val items: Flow<List<Item>> = _items.asStateFlow()
+    val items = _items.asStateFlow()
 
     suspend fun getAllItems(): List<Item> = _items.value
 
@@ -37,8 +42,14 @@ class WardrobeRepository @Inject constructor(
             }
     }
 
-    suspend fun generateColorPalette(baseColor: String, paletteType: String?): List<String> {
-        return remoteServices.generateColorPalette(baseColor = baseColor)
+    // Генерация палитры через TheColorApiService (генератор)
+    suspend fun generateColorPalette(hex: String, mode: String): List<String> {
+        return remoteServices.getColorScheme(hex, mode)
+    }
+
+    // Получение палитры деталей через ColorApiService (детали)
+    suspend fun generateColorPaletteDetails(input: List<Int>): List<String> {
+        return remoteServices.generateColorPalette(input)
     }
 
     suspend fun generateOutfitFromExisting(baseItem: Item): List<Look> {
@@ -66,16 +77,8 @@ class WardrobeRepository @Inject constructor(
             else -> item1.color.isWarm && item2.color.isWarm || item1.color.isCool && item2.color.isCool
         }
 
-        val styleCompatible = item2.style == item1.style ||
-                item2.style == Item.Style.ПОВСЕДНЕВНЫЙ ||
-                item1.style == Item.Style.ПОВСЕДНЕВНЫЙ
+        val styleCompatible = item1.style == item2.style
 
-        val categoryCompatible = when (item1.category) {
-            Item.Category.ВЕРХ -> item2.category != Item.Category.ВЕРХ
-            Item.Category.НИЗ -> item2.category != Item.Category.НИЗ
-            else -> true
-        }
-
-        return colorCompatible && styleCompatible && categoryCompatible
+        return colorCompatible && styleCompatible
     }
 }

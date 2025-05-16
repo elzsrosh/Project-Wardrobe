@@ -75,26 +75,10 @@ fun ItemDetailsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                Text(
-                    "Категория: ${item?.category?.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFFC2185B)
-                )
-                Text(
-                    "Материал: ${item?.material?.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFFC2185B)
-                )
-                Text(
-                    "Стиль: ${item?.style?.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFFC2185B)
-                )
-                Text(
-                    "Цвет: ${item?.color?.hex} (${item?.color?.colorGroup?.name})",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFFC2185B)
-                )
+                Text("Категория: ${item?.category?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+                Text("Материал: ${item?.material?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+                Text("Стиль: ${item?.style?.name}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+                Text("Цвет: ${item?.color?.hex} (${item?.color?.colorGroup?.name})", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -105,8 +89,11 @@ fun ItemDetailsScreen(
                     Button(
                         onClick = {
                             item?.let {
-                                viewModel.generateColorPalette(it.color.hex)
-                                viewModel.getStyleAdvice(it.toString())
+                                val rgbList = ColorUtils.hexToRgb(it.color.hex)
+
+                                viewModel.generateColorPaletteFromColorApi(rgbList)
+
+                                viewModel.getStyleAdvice(it.name)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
@@ -139,11 +126,7 @@ fun ItemDetailsScreen(
 
                 if (colorPalette.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "Сгенерированная палитра:",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFC2185B)
-                    )
+                    Text("Сгенерированная палитра:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
                     Row(
                         modifier = Modifier.padding(top = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -160,11 +143,7 @@ fun ItemDetailsScreen(
 
                 if (styleAdvice.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "Совет по стилю:",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFC2185B)
-                    )
+                    Text("Совет по стилю:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color.White)

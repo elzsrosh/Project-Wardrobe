@@ -1,8 +1,7 @@
 package com.example.wardrobecomposer.di
 
 import com.example.wardrobecomposer.api.ColorApiService
-import com.example.wardrobecomposer.api.HuggingFaceApiService
-import com.example.wardrobecomposer.api.ImageUploadService
+import com.example.wardrobecomposer.api.TheColorApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,48 +10,53 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://colormind.io/"
+
+    private const val BASE_URL_COLOR_API = "http://colormind.io/"
+    private const val BASE_URL_THE_COLOR_API = "https://www.thecolorapi.com/"
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                }
-            )
+    fun provideOkHttpClient(): OkHttpClient {
+        val logger = HttpLoggingInterceptor()
+        logger.level = HttpLoggingInterceptor.Level.BODY
+        return OkHttpClient.Builder()
+            .addInterceptor(logger)
             .build()
+    }
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
+    @Named("colorApiRetrofit")
+    fun provideColorApiRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_COLOR_API)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
     @Provides
     @Singleton
-    fun provideColorApiService(retrofit: Retrofit): ColorApiService =
+    @Named("theColorApiRetrofit")
+    fun provideTheColorApiRetrofit(client: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BASE_URL_THE_COLOR_API)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideColorApiService(@Named("colorApiRetrofit") retrofit: Retrofit): ColorApiService =
         retrofit.create(ColorApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideImageUploadService(retrofit: Retrofit): ImageUploadService =
-        retrofit.create(ImageUploadService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideHuggingFaceService(client: OkHttpClient): HuggingFaceApiService =
-        HuggingFaceApiService(client)
+    fun provideTheColorApiService(@Named("theColorApiRetrofit") retrofit: Retrofit): TheColorApiService =
+        retrofit.create(TheColorApiService::class.java)
 }

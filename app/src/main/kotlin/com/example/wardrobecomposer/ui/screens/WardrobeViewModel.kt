@@ -6,10 +6,8 @@ import com.example.wardrobecomposer.model.item.Item
 import com.example.wardrobecomposer.model.item.Look
 import com.example.wardrobecomposer.repository.WardrobeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,6 +15,7 @@ import javax.inject.Inject
 class WardrobeViewModel @Inject constructor(
     private val repository: WardrobeRepository
 ) : ViewModel() {
+
     private val _items = MutableStateFlow<List<Item>>(emptyList())
     val items: StateFlow<List<Item>> = _items.asStateFlow()
 
@@ -43,80 +42,101 @@ class WardrobeViewModel @Inject constructor(
     }
 
     fun loadItems() {
-        viewModelScope.launch {
-            _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
-                _items.value = repository.getAllItems()
+                val loadedItems = repository.getAllItems()
+                _items.emit(loadedItems)
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
             }
         }
     }
 
     fun addItem(item: Item) {
-        viewModelScope.launch {
-            _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
                 repository.addItem(item)
-                _items.update { repository.getAllItems() }
+                _items.emit(repository.getAllItems())
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
             }
         }
     }
 
     fun selectItem(itemId: String) {
         viewModelScope.launch {
-            _selectedItem.value = _items.value.find { it.id == itemId }
+            _selectedItem.emit(_items.value.find { it.id == itemId })
         }
     }
 
     fun selectLook(lookId: String) {
         viewModelScope.launch {
-            _selectedLook.value = _looks.value.find { it.id == lookId }
+            _selectedLook.emit(_looks.value.find { it.id == lookId })
         }
     }
 
     fun generateLooksFromItem(item: Item) {
-        viewModelScope.launch {
-            _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
-                _looks.value = repository.generateLooksFromItem(item)
+                val generatedLooks = repository.generateLooksFromItem(item)
+                _looks.emit(generatedLooks)
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
             }
         }
     }
 
     fun generateLooksByColor(colorGroup: Item.Color.ColorGroup) {
-        viewModelScope.launch {
-            _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
-                _looks.value = repository.generateLooksByColor(colorGroup)
+                val looks = repository.generateLooksByColor(colorGroup)
+                _looks.emit(looks)
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
             }
         }
     }
 
-    fun generateColorPalette(baseColor: String, paletteType: String? = null) {
-        viewModelScope.launch {
-            _isLoading.value = true
+    // Используем режим mode (например, "complement", "analogic" и т.д.)
+    fun generateColorPalette(baseColorHex: String, mode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
-                _colorPalette.value = repository.generateColorPalette(baseColor, paletteType)
+                val palette = repository.generateColorPalette(baseColorHex, mode)
+                _colorPalette.emit(palette)
+            } catch (e: Exception) {
+                e.printStackTrace()
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
+            }
+        }
+    }
+
+    // Палитра деталей (используется RGB список)
+    fun generateColorPaletteFromColorApi(rgbInput: List<Int>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
+            try {
+                val palette = repository.generateColorPaletteDetails(rgbInput)
+                _colorPalette.emit(palette)
+            } finally {
+                _isLoading.emit(false)
             }
         }
     }
 
     fun getStyleAdvice(itemName: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.emit(true)
             try {
-                _styleAdvice.value = repository.getStyleAdvice(itemName)
+                val advice = repository.getStyleAdvice(itemName)
+                _styleAdvice.emit(advice)
             } finally {
-                _isLoading.value = false
+                _isLoading.emit(false)
             }
         }
     }
