@@ -92,7 +92,13 @@ fun ItemDetailsScreen(
                             item?.let {
                                 val hex = it.color.hex.removePrefix("#")
                                 viewModel.generateColorPalette(hex, "analogic")
-                                viewModel.getStyleAdvice(it.name)
+                                viewModel.getStyleAdvice(
+                                    itemName = it.name,
+                                    type = it.category?.name,
+                                    material = it.material?.name,
+                                    style = it.style?.name,
+                                    color = it.color?.hex
+                                )
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
@@ -152,7 +158,9 @@ fun ItemDetailsScreen(
                         Text(
                             text = styleAdvice,
                             modifier = Modifier.padding(16.dp),
-                            color = Color(0xFFC2185B)
+                            color = Color(0xFFC2185B),
+                            maxLines = Int.MAX_VALUE,
+                            softWrap = true
                         )
                     }
                 }

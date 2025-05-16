@@ -1,7 +1,7 @@
 package com.example.wardrobecomposer.repository
 
 import com.example.wardrobecomposer.api.TheColorApiService
-import com.example.wardrobecomposer.api.HuggingFaceApiService
+import com.example.wardrobecomposer.api.TogetherAiApiService
 import com.example.wardrobecomposer.model.item.Item
 import com.example.wardrobecomposer.model.item.Look
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class WardrobeRepository @Inject constructor(
     private val remoteServices: RemoteServices,
-    private val huggingFaceApi: HuggingFaceApiService
+    private val togetherAiApi: TogetherAiApiService
 ) {
     private val _items = MutableStateFlow<List<Item>>(emptyList())
     val items = _items.asStateFlow()
@@ -40,7 +40,6 @@ class WardrobeRepository @Inject constructor(
             }
     }
 
-    // Генерация палитры через TheColorApiService
     suspend fun generateColorPalette(hex: String, mode: String): List<String> {
         return remoteServices.getColorScheme(hex, mode)
     }
@@ -58,8 +57,15 @@ class WardrobeRepository @Inject constructor(
             .map { companionItem -> Look.fromPair(newItem, companionItem) }
     }
 
-    suspend fun getStyleAdvice(itemName: String): String {
-        return huggingFaceApi.getStyleAdvice(itemName)
+    // ✅ Обновлённый метод с поддержкой всех параметров
+    suspend fun getStyleAdvice(
+        itemName: String,
+        type: String? = null,
+        material: String? = null,
+        style: String? = null,
+        color: String? = null
+    ): String {
+        return togetherAiApi.getStyleAdvice(itemName, type, material, style, color)
     }
 
     private fun isItemsCompatible(item1: Item, item2: Item): Boolean {
@@ -67,7 +73,8 @@ class WardrobeRepository @Inject constructor(
             item1.color.colorGroup == item2.color.colorGroup -> true
             item1.color.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
             item2.color.colorGroup == Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> true
-            else -> item1.color.isWarm && item2.color.isWarm || item1.color.isCool && item2.color.isCool
+            else -> item1.color.isWarm && item2.color.isWarm ||
+                    item1.color.isCool && item2.color.isCool
         }
 
         val styleCompatible = item1.style == item2.style
