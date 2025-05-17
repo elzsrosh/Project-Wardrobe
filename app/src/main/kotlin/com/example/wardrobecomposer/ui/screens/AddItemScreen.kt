@@ -1,6 +1,5 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 package com.example.wardrobecomposer.ui.screens
-
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,7 +42,6 @@ fun AddItemScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri -> imageUri = uri },
     )
-
     WardrobeComposerTheme {
         Column(
             modifier = Modifier
@@ -154,6 +152,8 @@ fun AddItemScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text("МАТЕРИАЛ:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
+
+            // Первая строка материалов: первые 3
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -172,13 +172,15 @@ fun AddItemScreen(
                     )
                 }
             }
+
+            // Вторая строка материалов: следующие 3
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Item.Material.values().drop(3).forEach { material ->
+                Item.Material.values().drop(3).take(3).forEach { material ->
                     FilterChip(
                         selected = selectedMaterial == material,
                         onClick = { selectedMaterial = material },
@@ -190,11 +192,30 @@ fun AddItemScreen(
                     )
                 }
             }
+
+            // Третья строка: ЗОЛОТО и СЕРЕБРО — в отдельной строке
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                listOf(Item.Material.ЗОЛОТО, Item.Material.СЕРЕБРО).forEach { material ->
+                    FilterChip(
+                        selected = selectedMaterial == material,
+                        onClick = { selectedMaterial = material },
+                        label = { Text(material.name.uppercase(), color = Color(0xFFC2185B)) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = Color.White,
+                            selectedContainerColor = Color(0xFFFFB6C1)
+                        )
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Text("СТИЛЬ (МОЖНО ВЫБРАТЬ НЕСКОЛЬКО):", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
             Spacer(modifier = Modifier.height(8.dp))
-
-            // Строка со стилями СПОРТИВНЫЙ и ДЕЛОВОЙ
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -217,7 +238,6 @@ fun AddItemScreen(
                     )
                 }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,7 +260,6 @@ fun AddItemScreen(
                     )
                 }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -263,7 +282,6 @@ fun AddItemScreen(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
             Text("ЦВЕТ:", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC2185B))
             Row(
@@ -300,7 +318,7 @@ fun AddItemScreen(
                     .padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Item.Color.ColorGroup.values().drop(14).take(3).forEach { group ->
+                Item.Color.ColorGroup.values().drop(14).take(7).forEach { group ->
                     ColorSquare(
                         color = ColorUtils.colorForGroup(group),
                         selected = selectedColorGroup == group,
@@ -308,7 +326,20 @@ fun AddItemScreen(
                     )
                 }
             }
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                listOf(Item.Color.ColorGroup.ЗОЛОТОЙ, Item.Color.ColorGroup.СЕРЕБРЯНЫЙ).forEach { group ->
+                    ColorSquare(
+                        color = ColorUtils.colorForGroup(group),
+                        selected = selectedColorGroup == group,
+                        onClick = { selectedColorGroup = group }
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
@@ -347,7 +378,6 @@ fun AddItemScreen(
             ) {
                 Text("СОХРАНИТЬ", color = Color(0xFFC2185B))
             }
-
         }
     }
 }

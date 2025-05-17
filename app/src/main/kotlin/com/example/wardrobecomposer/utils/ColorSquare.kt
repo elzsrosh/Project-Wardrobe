@@ -21,14 +21,14 @@ fun ColorSquare(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier =
-            modifier
-                .size(40.dp)
-                .background(color)
-                .border(
-                    width = if (selected) 2.dp else 1.dp,
-                    color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
-                ).clickable { onClick() },
+        modifier = modifier
+            .size(40.dp)
+            .background(color)
+            .border(
+                width = if (selected) 2.dp else 1.dp,
+                color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
+            )
+            .clickable { onClick() },
     )
 }
 
@@ -57,4 +57,6 @@ fun colorForGroup(group: Item.Color.ColorGroup): Color =
         Item.Color.ColorGroup.ЛОСОСЕВЫЙ -> Color(0xFFFF8A65)
         Item.Color.ColorGroup.БОРДОВЫЙ -> Color(0xFF880E4F)
         Item.Color.ColorGroup.ПЕСОЧНЫЙ -> Color(0xFFFFF176)
+        Item.Color.ColorGroup.ЗОЛОТОЙ -> Color(0xFFFFD700)
+        Item.Color.ColorGroup.СЕРЕБРЯНЫЙ -> Color(0xFFC0C0C0)
     }

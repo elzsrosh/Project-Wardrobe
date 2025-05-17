@@ -42,6 +42,8 @@ data class Item(
         ДЖИНСА,
         КОЖА,
         СИНТЕТИКА,
+        СЕРЕБРО,
+        ЗОЛОТО,
     }
 
     @Serializable
@@ -51,22 +53,17 @@ data class Item(
     ) {
         @Serializable
         enum class ColorGroup {
-            // Нейтральные
             НЕЙТРАЛЬНЫЙ,
             БЕЛЫЙ,
             ЧЁРНЫЙ,
             СЕРЫЙ,
             ПАСТЕЛЬНЫЙ,
-
-            // Тёплые
             ТЁПЛЫЙ,
             ОРАНЖЕВЫЙ,
             ЖЁЛТЫЙ,
             КРАСНЫЙ,
             ЗЕМЛЯНОЙ,
             КОРИЧНЕВЫЙ,
-
-            // Холодные
             ХОЛОДНЫЙ,
             СИНИЙ,
             ФИОЛЕТОВЫЙ,
@@ -75,12 +72,12 @@ data class Item(
             ЛАВАНДА,
             МЯТА,
             АКВА,
-
-            // Дополнительные
             ЛОСОСЕВЫЙ,
             БОРДОВЫЙ,
             ПЕСОЧНЫЙ,
-            РОЗОВЫЙ
+            РОЗОВЫЙ,
+            ЗОЛОТОЙ,
+            СЕРЕБРЯНЫЙ
         }
 
         fun toHexWithoutHash(): String = hex.replace("#", "")
@@ -118,6 +115,8 @@ data class Item(
                     normalizedHex.matches(Regex("(?i)^880E4F.*")) -> ColorGroup.БОРДОВЫЙ
                     normalizedHex.matches(Regex("(?i)^FFF176.*")) -> ColorGroup.ПЕСОЧНЫЙ
                     normalizedHex.matches(Regex("(?i)^E91E63.*")) -> ColorGroup.РОЗОВЫЙ
+                    normalizedHex.matches(Regex("(?i)^FFD700.*")) -> ColorGroup.ЗОЛОТОЙ
+                    normalizedHex.matches(Regex("(?i)^C0C0C0.*")) -> ColorGroup.СЕРЕБРЯНЫЙ
 
                     else -> ColorGroup.ХОЛОДНЫЙ
                 }
@@ -136,7 +135,8 @@ data class Item(
                     ColorGroup.КОРИЧНЕВЫЙ,
                     ColorGroup.ЛОСОСЕВЫЙ,
                     ColorGroup.БОРДОВЫЙ,
-                    ColorGroup.ПЕСОЧНЫЙ -> true
+                    ColorGroup.ПЕСОЧНЫЙ,
+                    ColorGroup.ЗОЛОТОЙ -> true
                     else -> false
                 }
 
@@ -151,7 +151,8 @@ data class Item(
                     ColorGroup.МЯТА,
                     ColorGroup.АКВА,
                     ColorGroup.ЯРКИЙ,
-                    ColorGroup.РОЗОВЫЙ -> true
+                    ColorGroup.РОЗОВЫЙ,
+                    ColorGroup.СЕРЕБРЯНЫЙ -> true
                     else -> false
                 }
     }

@@ -28,7 +28,9 @@ object ColorUtils {
         "#CE93D8" to "Лаванда",
         "#AED581" to "Мята",
         "#FFF176" to "Песочный",
-        "#4DD0E1" to "Аква"
+        "#4DD0E1" to "Аква",
+        "#FFD700" to "Золотой",
+        "#C0C0C0" to "Серебряный"
     )
 
     fun hexToColor(hex: String): Color {
@@ -39,31 +41,34 @@ object ColorUtils {
         return Color(r, g, b)
     }
 
-    fun colorForGroup(group: Item.Color.ColorGroup): Color = when (group) {
-        Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> hexToColor("#B0BEC5")
-        Item.Color.ColorGroup.ТЁПЛЫЙ -> hexToColor("#FFB300")
-        Item.Color.ColorGroup.ХОЛОДНЫЙ -> hexToColor("#64B5F6")
-        Item.Color.ColorGroup.ЗЕМЛЯНОЙ -> hexToColor("#8D6E63")
-        Item.Color.ColorGroup.ПАСТЕЛЬНЫЙ -> hexToColor("#E8F5E9")
-        Item.Color.ColorGroup.ЯРКИЙ -> hexToColor("#FF00FF")
-        Item.Color.ColorGroup.КРАСНЫЙ -> hexToColor("#F44336")
-        Item.Color.ColorGroup.ОРАНЖЕВЫЙ -> hexToColor("#FF9800")
-        Item.Color.ColorGroup.ЖЁЛТЫЙ -> hexToColor("#FFEB3B")
-        Item.Color.ColorGroup.ЗЕЛЁНЫЙ -> hexToColor("#4CAF50")
-        Item.Color.ColorGroup.СИНИЙ -> hexToColor("#2196F3")
-        Item.Color.ColorGroup.ФИОЛЕТОВЫЙ -> hexToColor("#9C27B0")
-        Item.Color.ColorGroup.РОЗОВЫЙ -> hexToColor("#E91E63")
-        Item.Color.ColorGroup.КОРИЧНЕВЫЙ -> hexToColor("#795548")
-        Item.Color.ColorGroup.СЕРЫЙ -> Color(0xFF9E9E9E)
-        Item.Color.ColorGroup.ЧЁРНЫЙ -> Color(0xFF000000)
-        Item.Color.ColorGroup.БЕЛЫЙ -> Color(0xFFFFFFFF)
-        Item.Color.ColorGroup.ЛАВАНДА -> hexToColor("#CE93D8")
-        Item.Color.ColorGroup.МЯТА -> hexToColor("#AED581")
-        Item.Color.ColorGroup.АКВА -> hexToColor("#4DD0E1")
-        Item.Color.ColorGroup.ЛОСОСЕВЫЙ -> hexToColor("#FF8A65")
-        Item.Color.ColorGroup.БОРДОВЫЙ -> hexToColor("#880E4F")
-        Item.Color.ColorGroup.ПЕСОЧНЫЙ -> hexToColor("#FFF176")
-    }
+    fun colorForGroup(group: Item.Color.ColorGroup): Color =
+        when (group) {
+            Item.Color.ColorGroup.НЕЙТРАЛЬНЫЙ -> Color(0xFFB0BEC5)
+            Item.Color.ColorGroup.ТЁПЛЫЙ -> Color(0xFFFFB300)
+            Item.Color.ColorGroup.ХОЛОДНЫЙ -> Color(0xFF64B5F6)
+            Item.Color.ColorGroup.ЗЕМЛЯНОЙ -> Color(0xFF8D6E63)
+            Item.Color.ColorGroup.ПАСТЕЛЬНЫЙ -> Color(0xFFE8F5E9)
+            Item.Color.ColorGroup.ЯРКИЙ -> Color(0xFFFF00FF)
+            Item.Color.ColorGroup.КРАСНЫЙ -> Color(0xFFF44336)
+            Item.Color.ColorGroup.ОРАНЖЕВЫЙ -> Color(0xFFFF9800)
+            Item.Color.ColorGroup.ЖЁЛТЫЙ -> Color(0xFFFFEB3B)
+            Item.Color.ColorGroup.ЗЕЛЁНЫЙ -> Color(0xFF4CAF50)
+            Item.Color.ColorGroup.СИНИЙ -> Color(0xFF2196F3)
+            Item.Color.ColorGroup.ФИОЛЕТОВЫЙ -> Color(0xFF9C27B0)
+            Item.Color.ColorGroup.РОЗОВЫЙ -> Color(0xFFE91E63)
+            Item.Color.ColorGroup.КОРИЧНЕВЫЙ -> Color(0xFF795548)
+            Item.Color.ColorGroup.СЕРЫЙ -> Color(0xFF9E9E9E)
+            Item.Color.ColorGroup.ЧЁРНЫЙ -> Color(0xFF000000)
+            Item.Color.ColorGroup.БЕЛЫЙ -> Color(0xFFFFFFFF)
+            Item.Color.ColorGroup.ЛАВАНДА -> Color(0xFFCE93D8)
+            Item.Color.ColorGroup.МЯТА -> Color(0xFFAED581)
+            Item.Color.ColorGroup.АКВА -> Color(0xFF4DD0E1)
+            Item.Color.ColorGroup.ЛОСОСЕВЫЙ -> Color(0xFFFF8A65)
+            Item.Color.ColorGroup.БОРДОВЫЙ -> Color(0xFF880E4F)
+            Item.Color.ColorGroup.ПЕСОЧНЫЙ -> Color(0xFFFFF176)
+            Item.Color.ColorGroup.ЗОЛОТОЙ -> Color(0xFFFFD700)
+            Item.Color.ColorGroup.СЕРЕБРЯНЫЙ -> Color(0xFFC0C0C0)
+        }
 
     fun getContrastColor(background: Color): Color {
         val luminance = (0.299 * background.red + 0.587 * background.green + 0.114 * background.blue)

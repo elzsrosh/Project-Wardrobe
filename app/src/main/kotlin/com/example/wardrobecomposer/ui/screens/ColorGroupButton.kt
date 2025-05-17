@@ -26,11 +26,11 @@ fun ColorGroupButton(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp) // Увеличенная ширина для больших квадратов
+        modifier = Modifier.width(80.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(60.dp) // Увеличенный квадрат
+                .size(60.dp)
                 .background(ColorUtils.colorForGroup(group))
                 .border(
                     width = if (selected) 2.dp else 1.dp,
